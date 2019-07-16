@@ -1,10 +1,10 @@
 import Home from '_c/main'
 import Login from '@/views/login/login.vue'
 import Report from '@/views/report/report.vue'
-import CompFactoryReport from '@/views/report/frame/s_compFactoryReport/App.vue'
-import DeliveryQuery from '@/views/report/frame/s_deliveryQuery/App.vue'
-import PaperOrderQuery from '@/views/report/frame/s_paperOrderQuery/App.vue'
-import SumOfCustArrears from '@/views/report/frame/s_sumOfCustArrears/App.vue'
+import CompFactoryReport from '@/views/report/frame/s_compfactoryreport/App.vue'
+import DeliveryQuery from '@/views/report/frame/s_deliveryquery/App.vue'
+import PaperOrderQuery from '@/views/report/frame/s_paperorderquery/App.vue'
+import SumOfCustArrears from '@/views/report/frame/s_sumofcustarrears/App.vue'
 export default[
     {
       path: '/',

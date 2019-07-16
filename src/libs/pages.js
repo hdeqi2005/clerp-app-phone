@@ -17,7 +17,7 @@ files.forEach(item => {
 
   console.log('-----page Name----------'+page)
   if (pageParent === 'frame') {
-    page = `${page}Frame`
+    page = `${page}_frame`
   }
   pages[page] = item
 })

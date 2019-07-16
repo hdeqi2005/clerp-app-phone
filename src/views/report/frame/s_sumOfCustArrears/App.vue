@@ -1,10 +1,13 @@
 <template>
   <div id="app">
-    <headerview></headerview>
+    <headerview title='客户欠款查询' @onClickRight="onClickRight"></headerview>
             <van-row  class="body">
                     <van-cell :border="false" title="主体内容" >
-                        SumOfCustArrears
+                        客户欠款查询
                     </van-cell>
+                    <van-popup  position="bottom"
+  :style="{ height: 'auto' }" v-model="showSearchForm"><searchForm></searchForm></van-popup>
+                   
             </van-row>
          <footerview></footerview>
   </div>
@@ -13,14 +16,18 @@
 /**
  * @description  //客户欠款汇总表 SumOfCustArrears
  */
+
+import searchForm from '_c/searchForm'
 import { getToken, setToken,setLocalStorage,getLocalStorage } from '@/libs/util'
 import baseMixin from '@/mixins'
 import {mapActions} from 'vuex'
 export default {
   name:'SumOfCustArrears',
   mixins:[baseMixin],
+  components:{searchForm},
   data(){
     return {
+      showSearchForm:false,
       dataSource:[], //数据源
       searchParams:{
           startDate:'2019-07-10',
@@ -52,6 +59,10 @@ export default {
         }).catch(err=>{
              _self.$toast('获取数据失败:'+err)
         })
+    },
+    //查询条件
+    onClickRight(){
+      this.showSearchForm=true
     }
   }
 
