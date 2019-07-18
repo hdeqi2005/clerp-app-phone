@@ -1,0 +1,133 @@
+<template>
+  <div id="app">
+    <headerview title='客户欠款查询' @onClickRight="onClickRight"></headerview>
+                    <van-row  class="body">
+                    <!-- <van-cell :border="false" title="主体内容" >
+                      <template slot="title"> -->
+                           <div class="dataTable">
+                              <v-table
+                              id="dt_sumofcustarrears"
+                              ref="dt_sumofcustarrears"
+                              is-vertical-resize
+                              style="width:100%;"
+                              is-horizontal-resize
+                              :columns="dataColumns"
+                              :table-data="dataSource"
+                              :show-vertical-border="true"
+                              :error-content="errorContent"
+                              even-bg-color="#f4f4f4"
+                              row-hover-color="#eee"
+                              row-click-color="#edf7ff">
+                              </v-table>
+                          </div>
+                      <!-- </template>
+                    </van-cell> -->
+                    <van-popup  position="bottom"
+                      :style="{ height: 'auto' }" v-model="showSearchForm">
+                      <searchForm @handleSearch="handleSearch"></searchForm>
+                  </van-popup>
+            </van-row>
+         <footerview></footerview>
+  </div>
+</template>
+<script>
+/**
+ * @description  //客户欠款汇总表 SumOfCustArrears
+ */
+
+import searchForm from '_c/searchForm'
+import { getToken, setToken,setLocalStorage,getLocalStorage } from '@/libs/util'
+import baseMixin from '@/mixins'
+import {mapActions} from 'vuex'
+export default {
+  name:'SumOfCustArrears',
+  mixins:[baseMixin],
+  components:{searchForm},
+  data(){
+    return {
+      errorContent:'数据加载中...',
+      showSearchForm:false,
+      dataSource:[], //数据源
+      searchParams:{
+           startDate:'2018-01-01',
+           endDate:'2019-07-10',
+            ctCode:'',
+            token:getToken()
+      },
+      //数据列描述，格式化
+      dataColumns: [
+                      {field: 'vnct_name', title:'客户名称', width: 136, titleAlign: 'center',columnAlign:'center',
+                      formatter: (rowData, index)=>{
+                              return `<span">${rowData.vnct_name}</span>`
+                      },},
+                       {field: 'init_amt', title:'期初金额', width: 136, titleAlign: 'center',columnAlign:'center',
+                      formatter: (rowData, index)=>{
+                              return `<span">${rowData.amt}</span>`
+                      },},
+                      {field: 'de_amt', title:'送货金额', width: 136, titleAlign: 'center',columnAlign:'center',
+                      formatter: (rowData, index)=>{
+                              return `<span">${rowData.amt}</span>`
+                      },},
+                      {field: 'am_amt', title:'收款金额', width: 136, titleAlign: 'center',columnAlign:'center',
+                      formatter: (rowData, index)=>{
+                              return `<span">${rowData.amt}</span>`
+                      },},
+                      {field: 'amt', title:'期末额', width: 136, titleAlign: 'center',columnAlign:'center',
+                      formatter: (rowData, index)=>{
+                              return `<span">${rowData.amt}</span>`
+                      },},
+                    ]
+    }
+  },
+  created(){
+    //实例已经在内存中创建OK，此时 data 和 methods 已经创建OK，此时还没有开始 编译模板
+    this.getDataSource()
+  },
+  methods:{
+    ...mapActions(['getAccRAnalyzer_action']),
+    //获取客户欠款汇总数据
+    getDataSource(){
+        //根据开始日期(startDate)，结束日期(endDate)，客户(ctCode)来汇总客户欠款
+        let params= this.searchParams
+        let _self =this
+
+        this.getAccRAnalyzer_action(params).then(res=>{
+          //debugger
+            _self.dataSource =res
+            if(_self.dataSource.length==0){
+               _self.errorContent='暂无数据'
+            }
+        }).catch(err=>{
+             _self.errorContent='暂无数据'
+             _self.$toast('获取数据失败:'+err)
+        })
+    },
+    //显示查询条件框
+    onClickRight(){
+      this.showSearchForm=true
+    },
+    //查询参数回调处理
+    handleSearch(params){
+     if(params && params.startDate!=null){
+          this.searchParams.startDate =params.startDate
+          this.searchParams.endDate =params.endDate
+          this.getDataSource()
+          this.showSearchForm=false
+      }
+    }
+  }
+
+
+  
+}
+</script>
+
+<style lang="less">
+#app {
+  // font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  // -webkit-font-smoothing: antialiased;
+  // -moz-osx-font-smoothing: grayscale;
+  //text-align: center;
+}
+
+</style>
