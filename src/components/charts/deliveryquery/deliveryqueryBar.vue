@@ -1,0 +1,182 @@
+<template>
+  <div ref="dom" class="charts chart-bar"></div>
+</template>
+
+<script>
+// import echarts from 'echarts'
+ // 重点：此位置引入的是你单独配置的echarts
+import echarts from '@/libs/reportEcharts/deliveryqueryBar' //按需加载
+import tdTheme from './../theme.json'
+import { on, off } from '@/libs/tools'
+echarts.registerTheme('tdTheme', tdTheme)
+export default {
+  name: 'ChartBar',
+  props: {
+    sortGroup:{
+         type:String,
+         default:''
+    },
+    value: Array,
+    text: String,
+    subtext: String
+  },
+  data () {
+    return {
+      dom: null, yAxisUnit:'订单数'
+    }
+  },
+  watch:{
+    value(val){
+      if(val){
+         //console.log('数据变化：...')
+        this.initData()
+      }
+    }
+  },
+  methods: {
+    resize () {
+      this.dom.resize()
+    },
+    //获取图表数据
+    getSeriesData(itemList){
+      let tempList = []
+      for(let item in itemList){
+        let params = {
+                  ct_Name:itemList[item].ct_Name,
+                  // Area:Number.parseFloat(itemList[item].Area),
+                  // Cube:Number.parseFloat(itemList[item].Cube),
+                  // Weight:Number.parseFloat(itemList[item].Weight),
+                  pdi_Qty:Number.parseFloat(itemList[item].pdi_Qty),
+                  // OwnerMoney:Number.parseFloat(itemList[item].OwnerMoney),
+                  } 
+              
+         let seriesData = Object.values(params)
+         //debugger
+         tempList.push(seriesData)
+       }
+       return tempList
+      },
+      //获取bar总数
+    getSeriesCount(num){
+     // debugger
+      let seriesArray  = []
+      for (var i = 0; i < num; i++) {  
+           let series={
+              type: 'bar'
+            } 
+        seriesArray.push(series)
+      }  
+      return seriesArray
+   },
+   //初始化数据
+   initData(){
+       let _self = this
+       let tempValue =this.value
+       let sortGroup =this.sortGroup
+       let yAxisUnit =this.yAxisUnit
+       if(tempValue){
+            let seriesData = _self.getSeriesData(tempValue)
+
+    //    let option = {
+    //     legend: {
+    //        align: 'auto',
+    //        orient:'horizontal',
+    //        itemWidth:22,
+    //        itemHeight:20,
+    //        bottom:10,
+    //        left:30,
+    //        selectedMode:'single', //单选
+    //        //type: 'scroll',
+    //        inactiveColor:'rgba(0,23,11,0.3)',
+    //        textStyle:{color:'#000'}
+    //     },
+    //      grid: [
+    //              {top:50,left:60} //x: '100%', y: '7%', width: '38%', height: '38%',
+    //      ],
+    //     tooltip: {
+    //       position: ['50%', '5%']
+    //     },
+        
+    //     dataset: {
+    //         // 提供一份数据。
+    //         dimensions:  ['product', '面积', '体积', '重量','数量','金额'],
+    //         source: seriesData
+          
+    //     },
+    //     xAxis: [
+    //            {type: 'category'},
+    //            ],
+    //     // 声明一个 Y 轴，数值轴。
+    //     yAxis: [
+    //         {
+    //             name: `${yAxisUnit}`
+    //         }
+    //     ],
+    //     // 声明多个 bar 系列，默认情况下，每个系列会自动对应到 dataset 的每一列。
+    //     series: _self.getSeriesCount(5)
+    // }
+      let option = {
+            
+              tooltip: {
+                  trigger: 'axis',
+                  axisPointer: {
+                      type: 'shadow'
+                  }
+              },
+              legend: {
+                  // data: ['2011年', '2012年']
+              },
+              grid: {
+                  left: '3%',
+                  right: '4%',
+                  bottom: '3%',
+                  containLabel: true
+              },
+              xAxis: {
+                  type: 'value',
+                  boundaryGap: [0, 0.01]
+              },
+              dataset: {
+             // 提供一份数据。
+             // dimensions:  ['product', '面积', '体积', '重量','数量','金额'],
+              dimensions:  ['product','数量'],
+              source: seriesData
+              },
+              yAxis: {
+                  type: 'category',
+                  // data: ['巴西','印尼','美国','印度','中国','世界人口(万)']
+              },
+              series: _self.getSeriesCount(1)
+              // series: [
+              //     {
+              //         name: '2011年',
+              //         type: 'bar',
+              //         data: [18203, 23489, 29034, 104970, 131744, 630230]
+              //     },
+              //     {
+              //         name: '2012年',
+              //         type: 'bar',
+              //         data: [19325, 23438, 31000, 121594, 134141, 681807]
+              //     }
+              // ]
+          };
+
+      this.dom = echarts.init(this.$refs.dom, 'tdTheme')
+
+      this.dom.setOption(option)
+
+      on(window, 'resize', this.resize)
+    }
+     
+   } 
+},
+  mounted () {
+    this.$nextTick(() => {
+      this.initData()
+    })
+  },
+  beforeDestroy () {
+    off(window, 'resize', this.resize)
+  }
+}
+</script>
