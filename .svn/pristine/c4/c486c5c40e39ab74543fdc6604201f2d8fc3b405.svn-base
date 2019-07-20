@@ -2,7 +2,7 @@
   <div id="app">
         <headerview title='订单查询' @onClickRight="onClickRight"></headerview>
          <!--过滤按钮 -->
-         <filterBtn @handleFilterData='handleFilterData' :currentFilterType="currentFilterType"></filterBtn>
+         <filterBtn></filterBtn>
           <van-swipe @change="onChangeSwipe">
               <!--按日期汇总 默认 序号：0-->
               <van-swipe-item>
@@ -54,7 +54,6 @@ export default {
   components:{searchForm,paperorderqueryBar,filterBtn,reportDataTable,paperorderqueryBarByCust},
    data(){
    return {
-     currentFilterType:'',
       barTopData:[],
       barData:[],//图表数据
       errorContent:'数据加载中...',
@@ -69,43 +68,32 @@ export default {
            size:20
       },
       dataColumns:[],//动态列原型
-       //按客户员汇总
+      //数据列描述，格式化
       dataColumnsM1: [
-                     {field: 'co_CustId', title:'客户编号', width: 100, titleAlign: 'center',columnAlign:'left',isResize:true,
+                      {field: 'Aarea', title:'面积', width: 136, titleAlign: 'center',columnAlign:'right',
                       formatter: (rowData, index)=>{
-                              return `<span">${rowData.co_CustId}</span>`
+                              return `<span">${rowData.Aarea}</span>`
                       },},
-                      {field: 'ct_Desc', title:'客户名称', width: 100, titleAlign: 'center',columnAlign:'left',isResize:true,
+                       {field: 'Acube', title:'总体积', width: 136, titleAlign: 'center',columnAlign:'right',
                       formatter: (rowData, index)=>{
-                              return `<span">${rowData.ct_Desc}</span>`
+                              return `<span">${rowData.Acube}</span>`
                       },},
-                     {field: 'co_Qty', title:'数量', width: 80, titleAlign: 'center',columnAlign:'right',
-                      formatter: (rowData, index)=>{
-                              return `<span">${rowData.co_Qty}</span>`
-                      },},
-                      {field: 'BMoney', title:'本币金额', width: 80, titleAlign: 'center',columnAlign:'right',
+                      {field: 'BMoney', title:'本币金额', width: 136, titleAlign: 'center',columnAlign:'right',
                       formatter: (rowData, index)=>{
                               return `<span">${rowData.BMoney}</span>`
                       },},
-                   
-                //       {field: 'Weight', title:'重量', width: 136, titleAlign: 'center',columnAlign:'right',
-                //       formatter: (rowData, index)=>{
-                //               return `<span">${rowData.Weight}</span>`
-                //       },},
-                //       {field: 'Aarea', title:'面积', width: 136, titleAlign: 'center',columnAlign:'right',
-                //       formatter: (rowData, index)=>{
-                //               return `<span">${rowData.Aarea}</span>`
-                //       },},
-                //        {field: 'Acube', title:'总体积', width: 136, titleAlign: 'center',columnAlign:'right',
-                //       formatter: (rowData, index)=>{
-                //               return `<span">${rowData.Acube}</span>`
-                //       },},
-                    
-                    
-                //         {field: 'co_RateM', title:'金额%', width: 136, titleAlign: 'center',columnAlign:'right',
-                //       formatter: (rowData, index)=>{
-                //               return `<span">${rowData.co_RateM}</span>`
-                //       },},
+                      {field: 'Weight', title:'重量', width: 136, titleAlign: 'center',columnAlign:'right',
+                      formatter: (rowData, index)=>{
+                              return `<span">${rowData.Weight}</span>`
+                      },},
+                      {field: 'co_Qty', title:'数量', width: 136, titleAlign: 'center',columnAlign:'right',
+                      formatter: (rowData, index)=>{
+                              return `<span">${rowData.co_Qty}</span>`
+                      },},
+                        {field: 'co_RateM', title:'金额%', width: 136, titleAlign: 'center',columnAlign:'right',
+                      formatter: (rowData, index)=>{
+                              return `<span">${rowData.co_RateM}</span>`
+                      },},
                 //         {field: 'w_Name', title:'业务员', width: 136, titleAlign: 'center',columnAlign:'center',
                 //       formatter: (rowData, index)=>{
                 //               return `<span">${rowData.w_Name}</span>`
@@ -113,39 +101,38 @@ export default {
                  
                     ],
 
-         //按业务员汇总
+         //业务员==》数据列描述，格式化
       dataColumnsM2: [
-                     {field: 'w_Name', title:'业务员', width: 136, titleAlign: 'center',columnAlign:'left',isResize:true,
+                     {field: 'w_Name', title:'业务员', width: 136, titleAlign: 'center',columnAlign:'left',
                       formatter: (rowData, index)=>{
                               return `<span">${rowData.w_Name}</span>`
                       },},
-                      {field: 'co_Qty', title:'数量', width: 136, titleAlign: 'center',columnAlign:'right',isResize:true,
+                      {field: 'co_Qty', title:'数量', width: 136, titleAlign: 'center',columnAlign:'right',
                       formatter: (rowData, index)=>{
                               return `<span">${rowData.co_Qty}</span>`
                       },},
-                        {field: 'BMoney', title:'本币金额', width: 136, titleAlign: 'center',columnAlign:'right',isResize:true,
+                        {field: 'BMoney', title:'本币金额', width: 136, titleAlign: 'center',columnAlign:'right',
                       formatter: (rowData, index)=>{
                               return `<span">${rowData.BMoney}</span>`
                       },},
-                //       {field: 'co_RateM', title:'金额%', width: 136, titleAlign: 'center',columnAlign:'right',
-                //       formatter: (rowData, index)=>{
-                //               return `<span">${rowData.co_RateM}</span>`
-                //       },},
-                //       {field: 'Weight', title:'重量', width: 136, titleAlign: 'center',columnAlign:'right',
-                //       formatter: (rowData, index)=>{
-                //               return `<span">${rowData.Weight}</span>`
-                //       },},
-                //       {field: 'Aarea', title:'面积', width: 136, titleAlign: 'center',columnAlign:'right',
-                //       formatter: (rowData, index)=>{
-                //               return `<span">${rowData.Aarea}</span>`
-                //       },},
-                //        {field: 'Acube', title:'总体积', width: 136, titleAlign: 'center',columnAlign:'right',
-                //       formatter: (rowData, index)=>{
-                //               return `<span">${rowData.Acube}</span>`
-                //       },},
+                      {field: 'co_RateM', title:'金额%', width: 136, titleAlign: 'center',columnAlign:'right',
+                      formatter: (rowData, index)=>{
+                              return `<span">${rowData.co_RateM}</span>`
+                      },},
+                      {field: 'Weight', title:'重量', width: 136, titleAlign: 'center',columnAlign:'right',
+                      formatter: (rowData, index)=>{
+                              return `<span">${rowData.Weight}</span>`
+                      },},
+                      {field: 'Aarea', title:'面积', width: 136, titleAlign: 'center',columnAlign:'right',
+                      formatter: (rowData, index)=>{
+                              return `<span">${rowData.Aarea}</span>`
+                      },},
+                       {field: 'Acube', title:'总体积', width: 136, titleAlign: 'center',columnAlign:'right',
+                      formatter: (rowData, index)=>{
+                              return `<span">${rowData.Acube}</span>`
+                      },},
                     ],
-
-       //按日期汇总 5
+       //业务员==》数据列描述，格式化
       dataColumnsM3: [
                      {field: 'co_Date', title:'订单日期', width: 136, titleAlign: 'center',columnAlign:'center',isResize:true,
                       formatter: (rowData, index)=>{
@@ -180,47 +167,26 @@ export default {
     }
   },
   created(){ 
-     this.searchParams.startDate =moment().add('month', 0).format('YYYY-MM') + '-01'
-     this.searchParams.endDate =moment().format('YYYY-MM-DD')
+    this.searchParams.endDate =moment().format('YYYY-MM-DD')
     //实例已经在内存中创建OK，此时 data 和 methods 已经创建OK，此时还没有开始 编译模板
     this.getDataSource()
   },
   methods:{
-    //切換按鈕事件 周 月 季
-    handleFilterData(type){
-        this.currentFilterType =type
-        switch(type){
-          case 'week':
-            this.searchParams.startDate =moment().day(0).format('YYYY-MM-DD')
-            this.searchParams.endDate =moment().format('YYYY-MM-DD')
-             break
-          case 'month':
-            this.searchParams.startDate =moment().add('month', 0).format('YYYY-MM') + '-01'
-            this.searchParams.endDate =moment().format('YYYY-MM-DD')
-            break 
-          case 'season':
-            this.searchParams.startDate =moment().add(-3,'months').format('YYYY-MM-DD')
-            this.searchParams.endDate =moment().format('YYYY-MM-DD')
-            break
-        }
-       this.getDataSource() 
-    },
     //切换图层事件
     onChangeSwipe(value){
-           //汇总方式:默认方式 日期汇总5  客户汇总0  业务员汇总 1
-          let currentMode =Number(value)
+        //console.log('onChangeSwipe:'+value)
+           let currentMode =Number(value)
             switch(currentMode){
               case 0:
-               this.searchParams.mode = 5 //日期汇总5
+               this.searchParams.mode = currentMode
                break;
               case 1:
-                 this.searchParams.mode = 0 //客户汇总0
+                 this.searchParams.mode = currentMode
                break;
-              case 2:
-                this.searchParams.mode = 1  //业务员汇总
+              case 5:
+                this.searchParams.mode = currentMode
                break;
           }
-          this.getDataSource()
     },
     ...mapActions(['getPaperCOQueryAnaly_action']),
     //获取订单数据
@@ -232,10 +198,10 @@ export default {
         let params= Object.assign({},this.searchParams) 
             params.ctCode='' //test
         let _self =this
-        //debugger
+        //
         this.handleSwichDataColumns()
         this.getPaperCOQueryAnaly_action(params).then(res=>{
-                //debugger
+               // debugger
             _self.barTopData =res.topData
             _self.barData =res.orderData
             _self.dataSource =res.orderData
@@ -269,7 +235,7 @@ export default {
     },
     //查询参数回调处理
     handleSearch(params){
-       this.currentFilterType =''
+     // debugger
        if(params && params.startDate!=null){
           this.searchParams =Object.assign(this.searchParams,params)  
           this.getDataSource()

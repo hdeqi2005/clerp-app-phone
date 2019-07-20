@@ -1,0 +1,25 @@
+<template>
+    <div>
+         <van-row type="flex" justify="center">
+                        <van-col span="6"><van-button @click="handleFilterData('week')" size="large" :type="currentFilterType=='week'? 'info': 'default'">周</van-button></van-col>
+                        <van-col span="6"><van-button @click="handleFilterData('month')" size="large" :type="currentFilterType=='month'? 'info': 'default'">月</van-button></van-col>
+                        <van-col span="6"><van-button @click="handleFilterData('season')" size="large" :type="currentFilterType=='season'? 'info': 'default'">季</van-button></van-col>
+        </van-row>
+    </div>
+</template>
+<script>
+export default {
+    name:'filterBtn',
+    data(){
+        return{
+            currentFilterType:'week',
+        }
+    },
+    methods:{
+          //过滤数据BY  周 月 季
+            handleFilterData(type){
+                this.currentFilterType = type
+            },
+    }
+}
+</script>

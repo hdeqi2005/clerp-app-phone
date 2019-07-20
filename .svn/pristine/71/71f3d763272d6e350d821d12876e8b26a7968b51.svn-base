@@ -5,7 +5,7 @@
 <script>
 // import echarts from 'echarts'
  // 重点：此位置引入的是你单独配置的echarts
-import echarts from '@/libs/reportEcharts/deliveryqueryBar' //按需加载
+import echarts from '@/libs/echarts' //按需加载
 import tdTheme from './../theme.json'
 import { on, off } from '@/libs/tools'
 echarts.registerTheme('tdTheme', tdTheme)
@@ -40,14 +40,15 @@ export default {
     //获取图表数据
     getSeriesData(itemList){
       let tempList = []
+     
       for(let item in itemList){
+          let userName= itemList[item].ct_Desc
+          if(userName==null || userName ==undefined || userName ==''){
+            userName= itemList[item].w_Name
+          }
         let params = {
-                  ct_Name:itemList[item].ct_Name,
-                  // Area:Number.parseFloat(itemList[item].Area),
-                  // Cube:Number.parseFloat(itemList[item].Cube),
-                  // Weight:Number.parseFloat(itemList[item].Weight),
-                  pdi_Qty:Number.parseFloat(itemList[item].pdi_Qty),
-                  // OwnerMoney:Number.parseFloat(itemList[item].OwnerMoney),
+                  name:userName,
+                  co_Qty:Number.parseFloat(itemList[item].co_Qty),
                   } 
               
          let seriesData = Object.values(params)
@@ -116,22 +117,30 @@ export default {
     //     series: _self.getSeriesCount(5)
     // }
       let option = {
-            
+            title: {
+              text: this.text,
+              bottom:5,
+              // subtext: this.subtext,
+              x: 'center',
+            },
               tooltip: {
                   trigger: 'axis',
                   axisPointer: {
                       type: 'shadow'
                   }
               },
+             grid: [
+               {top:10,left:80} 
+            ],
               legend: {
                   // data: ['2011年', '2012年']
               },
-              grid: {
-                  left: '3%',
-                  right: '4%',
-                  bottom: '3%',
-                  containLabel: true
-              },
+              // grid: {
+              //     left: '3%',
+              //     right: '4%',
+              //     bottom: '3%',
+              //     containLabel: true
+              // },
               xAxis: {
                   type: 'value',
                   boundaryGap: [0, 0.01]
@@ -139,7 +148,7 @@ export default {
               dataset: {
              // 提供一份数据。
              // dimensions:  ['product', '面积', '体积', '重量','数量','金额'],
-              dimensions:  ['product','数量'],
+              // dimensions:  ['product','数量'],
               source: seriesData
               },
               yAxis: {

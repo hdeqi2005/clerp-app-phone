@@ -5,7 +5,7 @@
 <script>
 // import echarts from 'echarts'
  // 重点：此位置引入的是你单独配置的echarts
-import echarts from '@/libs/reportEcharts/deliveryqueryBar' //按需加载
+import echarts from '@/libs/echarts' //按需加载
 import tdTheme from './../theme.json'
 import { on, off } from '@/libs/tools'
 echarts.registerTheme('tdTheme', tdTheme)

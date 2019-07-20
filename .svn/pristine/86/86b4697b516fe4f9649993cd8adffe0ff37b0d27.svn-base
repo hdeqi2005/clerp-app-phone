@@ -1,27 +1,14 @@
 <template>
   <div id="app">
         <headerview :showLeftbtn="false" :showRightbtn="false" title="报表"></headerview>
-            <van-row  class="body">   <!-- <van-cell @click="turnToPage('compfactoryreport')" title="全厂综合报表" is-link />
+            <van-row  class="body">
+                  <van-cell-group>
+                    <van-cell v-for="(item,index) in currentViewMenu" :key="index" @click="turnToPage(`${item.data.resLink}`)" :title="item.title" is-link />
+                    <!-- <van-cell @click="turnToPage('compfactoryreport')" title="全厂综合报表" is-link />
                     <van-cell @click="turnToPage('deliveryquery')" title="送货查询" is-link />
                     <van-cell @click="turnToPage('paperorderquery')" title="订单查询" is-link />
                     <van-cell @click="turnToPage('sumofcustarrears')" title="客户欠款汇总表" is-link /> -->
-                  <!-- <van-cell-group>
-                    <van-cell v-for="(item,index) in currentViewMenu" :key="index" @click="turnToPage(`${item.data.resLink}`)" :title="item.title" is-link />
-                </van-cell-group> -->
-                 <van-grid square :border="false" :column-num="3">
-                    <van-grid-item
-                        v-for="(item,index) in currentViewMenu"
-                        @click="turnToPage(`${item.data.resLink}`)"
-                        :key="index"
-                        :text="item.title"
-                    >
-                    <template slot="icon" >
-                        <div>
-                        <van-icon size="20" color="#3296fa" :name="item.data.resIcon" />
-                        </div>
-                    </template>
-                    </van-grid-item>
-                </van-grid>
+                </van-cell-group>
             </van-row> 
          <footerview></footerview>
   </div>
@@ -57,7 +44,7 @@ export default {
                   return item.data.resLink=='report' ? true :false
               })
           this.currentViewMenu = afterFilterData[0].children
-          // console.log('this.currentViewMenu :'+ JSON.stringify(this.currentViewMenu))
+          console.log('this.currentViewMenu :'+ JSON.stringify(this.currentViewMenu))
        }
   }
 }

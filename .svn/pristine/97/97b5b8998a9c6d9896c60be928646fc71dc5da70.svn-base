@@ -3,9 +3,9 @@
         <headerview title='全厂综合查询' @onClickRight="onClickRight"></headerview>
                        <!--过滤按钮 -->
                      <van-row type="flex" justify="center">
-                        <van-col span="6"><van-button @click="handleFilterData('day')" size="large" :type="currentFilterType=='day'? 'info': 'default'">日</van-button></van-col>
-                        <van-col span="6"><van-button @click="handleFilterData('week')" size="large" :type="currentFilterType=='week'? 'info': 'default'">周</van-button></van-col>
-                        <van-col span="6"><van-button @click="handleFilterData('month')" size="large" :type="currentFilterType=='month'? 'info': 'default'">月</van-button></van-col>
+                        <van-col span="6"><van-button @click="handleFilterData('day')" size="small" :type="currentFilterType=='day'? 'info': 'default'">日</van-button></van-col>
+                        <van-col span="6"><van-button @click="handleFilterData('week')" size="small" :type="currentFilterType=='week'? 'info': 'default'">周</van-button></van-col>
+                        <van-col span="6"><van-button @click="handleFilterData('month')" size="small" :type="currentFilterType=='month'? 'info': 'default'">月</van-button></van-col>
                       </van-row>
                      <!--图表数据展示 -->
                       <van-row  class="body">
@@ -16,6 +16,9 @@
                       <template slot="title"> -->
                            <div class="dataTable">
                               <v-table
+                              :title-row-height="20"
+                                title-bg-color="#3296fae0"
+                              :row-height="20"
                               id="dt_compfactoryreport"
                               ref="dt_compfactoryreport"
                               is-vertical-resize
@@ -44,6 +47,7 @@
 /**
  * @description 全厂综合报表 CompFactoryReport
  */
+import moment from 'moment'; 
 import {compfactoryreportBar} from '_c/charts/compfactoryreport'
 import searchForm from '_c/searchForm'
 import { getToken, setToken,setLocalStorage,getLocalStorage } from '@/libs/util'
@@ -55,7 +59,7 @@ export default {
   mixins:[baseMixin],
    data(){
     return {
-      currentFilterType:'day',
+      currentFilterType:'month',
       barData:[],//图表数据
       errorContent:'数据加载中...',
       showSearchForm:false,
@@ -67,19 +71,19 @@ export default {
       },
       //数据列描述，格式化
       dataColumns: [
-                      {field: 'cab_date', title:'日期', width: 136, titleAlign: 'center',columnAlign:'center',
+                      {field: 'cab_date', title:'日期', width: 136, titleAlign: 'center',columnAlign:'center',isResize:true,
                       formatter: (rowData, index)=>{
                               return `<span">${rowData.cab_date}</span>`
                       },},
-                       {field: 'cab_week', title:'星期', width: 136, titleAlign: 'center',columnAlign:'center',
+                       {field: 'cab_week', title:'星期', width: 136, titleAlign: 'center',columnAlign:'center',isResize:true,
                       formatter: (rowData, index)=>{
                               return `<span">${rowData.cab_week}</span>`
                       },},
-                      {field: 'cac_BoxCOamt', title:'送货金额', width: 136, titleAlign: 'center',columnAlign:'center',
+                      {field: 'cac_BoxCOamt', title:'送货金额', width: 136, titleAlign: 'center',columnAlign:'center',isResize:true,
                       formatter: (rowData, index)=>{
                               return `<span">${rowData.cac_BoxCOamt}</span>`
                       },},
-                      {field: 'cac_BoxInamt', title:'收款金额', width: 136, titleAlign: 'center',columnAlign:'center',
+                      {field: 'cac_BoxInamt', title:'收款金额', width: 136, titleAlign: 'center',columnAlign:'center',isResize:true,
                       formatter: (rowData, index)=>{
                               return `<span">${rowData.cac_BoxInamt}</span>`
                       },},
@@ -124,6 +128,8 @@ export default {
     }
   },
   created(){
+     this.searchParams.startDate =moment().add('month', 0).format('YYYY-MM') + '-01'
+     this.searchParams.endDate =moment().format('YYYY-MM-DD')
     //实例已经在内存中创建OK，此时 data 和 methods 已经创建OK，此时还没有开始 编译模板
     this.getDataSource()
   },
@@ -134,6 +140,7 @@ export default {
        //根据开始日期(startDate)，结束日期(endDate),token来获取全厂综合报表
         let params= this.searchParams
         let _self =this
+        //debugger
         this.getColligateAnalyzer_action(params).then(res=>{
           //debugger
           _self.dataSource =res
@@ -149,6 +156,22 @@ export default {
     //过滤数据BY 日 周 月
     handleFilterData(type){
         this.currentFilterType = type
+       // debugger
+        switch(type){
+          case 'day':
+            this.searchParams.startDate =moment().format('YYYY-MM-DD')
+            this.searchParams.endDate =moment().format('YYYY-MM-DD')
+            break
+          case 'week':
+            this.searchParams.startDate =moment().day(0).format('YYYY-MM-DD')
+            this.searchParams.endDate =moment().format('YYYY-MM-DD')
+             break
+          case 'month':
+            this.searchParams.startDate =moment().add('month', 0).format('YYYY-MM') + '-01'
+            this.searchParams.endDate =moment().format('YYYY-MM-DD')
+            break 
+        }
+       this.getDataSource() 
     },
      //显示查询条件框
     onClickRight(){
@@ -156,7 +179,7 @@ export default {
     },
     //查询参数回调处理
     handleSearch(params){
-      //debugger
+      this.currentFilterType =''
     if(params && params.startDate!=null){
           this.searchParams =Object.assign(this.searchParams,params)  
           this.getDataSource()
@@ -175,5 +198,8 @@ export default {
   // text-align: center;
   // color: #2c3e50;
 }
-
+.table-title {
+    color: white;
+    // font-weight: bold;
+ }
 </style>

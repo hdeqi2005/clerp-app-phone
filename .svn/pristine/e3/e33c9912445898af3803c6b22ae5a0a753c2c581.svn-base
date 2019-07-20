@@ -150,7 +150,7 @@ export default {
         },
         //獲取菜單第一條數據作爲跳轉頁面
          getMenuListFirst(){
-          // debugger
+           debugger
           if(this.currentMenuList.length>0){
              this.redirectPage = this.currentMenuList[0].data.resLink
              if(this.redirectPage!='' && this.redirectPage!=null){

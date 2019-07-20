@@ -10,6 +10,9 @@
                         <template slot="title"> -->
                            <div class="dataTable">
                               <v-table
+                              :title-row-height="20"
+                              :row-height="20"
+                                title-bg-color="#3296fae0"
                               id="dt_deliveryquery"
                               ref="dt_deliveryquery"
                               is-vertical-resize
@@ -39,6 +42,7 @@
 /**
  * @description  送货查询 deliveryQuery
  */
+import moment from 'moment'; 
 import {deliveryqueryBar} from '_c/charts/deliveryquery'
 import searchForm from '_c/searchForm'
 import { getToken, setToken,setLocalStorage,getLocalStorage } from '@/libs/util'
@@ -62,19 +66,19 @@ export default {
       },
       //数据列描述，格式化
       dataColumns: [
-                     {field: 'ct_ID', title:'客户编号', width: 136, titleAlign: 'center',columnAlign:'left',
+                     {field: 'ct_ID', title:'客户编号', width: 136, titleAlign: 'center',columnAlign:'left',isResize:true,
                       formatter: (rowData, index)=>{
                               return `<span">${rowData.ct_ID}</span>`
                       },},
-                      {field: 'ct_Name', title:'客户名称', width: 136, titleAlign: 'center',columnAlign:'left',
+                      {field: 'ct_Name', title:'客户名称', width: 136, titleAlign: 'center',columnAlign:'left',isResize:true,
                       formatter: (rowData, index)=>{
                               return `<span">${rowData.ct_Name}</span>`
                       },},
-                       {field: 'ai_Name', title:'地区', width: 136, titleAlign: 'center',columnAlign:'left',
+                       {field: 'ai_Name', title:'地区', width: 136, titleAlign: 'center',columnAlign:'left',isResize:true,
                       formatter: (rowData, index)=>{
                               return `<span">${rowData.ai_Name}</span>`
                       },},
-                       {field: 'w_Name', title:'业务员', width: 136, titleAlign: 'center',columnAlign:'left',
+                       {field: 'w_Name', title:'业务员', width: 136, titleAlign: 'center',columnAlign:'left',isResize:true,
                       formatter: (rowData, index)=>{
                               return `<span">${rowData.w_Name}</span>`
                       },},
@@ -114,6 +118,8 @@ export default {
     }
   },
   created(){
+    //  this.searchParams.startDate =moment().add('month', 0).format('YYYY-MM') + '-01'
+    //  this.searchParams.endDate =moment().format('YYYY-MM-DD')
     //实例已经在内存中创建OK，此时 data 和 methods 已经创建OK，此时还没有开始 编译模板
     this.getDataSource()
   },
@@ -162,5 +168,8 @@ export default {
   // text-align: center;
   // color: #2c3e50;
 }
-
+.table-title {
+    color: white;
+    // font-weight: bold;
+ }
 </style>

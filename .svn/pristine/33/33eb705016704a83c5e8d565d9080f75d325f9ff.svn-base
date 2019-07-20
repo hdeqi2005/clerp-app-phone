@@ -4,11 +4,10 @@
          <div class="footerMargin"></div>
         <van-row class="footer">
             <van-tabbar :safe-area-inset-bottom="true" v-model="active">
-             <van-tabbar-item v-for="(item,index) in menuList" :key="index" @click.native="turnToPage(`${item.data.resLink}`)"  :icon="item.data.resIcon">{{item.title}}</van-tabbar-item>
-            <!-- <van-tabbar-item @click.native="turnToPage('index')" icon="home-o">审批</van-tabbar-item>
+            <van-tabbar-item @click.native="turnToPage('index')" icon="home-o">审批</van-tabbar-item>
             <van-tabbar-item @click.native="turnToPage('login')" icon="search">预警</van-tabbar-item>
             <van-tabbar-item icon="friends-o">仓库</van-tabbar-item>
-            <van-tabbar-item @click.native="turnToPage('report')"  icon="setting-o">报表</van-tabbar-item> -->
+            <van-tabbar-item @click.native="turnToPage('report')"  icon="setting-o">报表</van-tabbar-item>
             </van-tabbar>
         </van-row>
 
@@ -29,13 +28,11 @@ export default {
             //console.log('active :'+oldValue,newValue)
         }
     },
-    computed: {
-        menuList() {
-             let tempMenuList =this.$store.getters.menuList_getters
-            // console.log('footer tempMenuList'+JSON.stringify(tempMenuList))
-            return tempMenuList
-        }
-  },
+    computed:{
+        // activeHandle(){
+        //     if(active) 
+        // }
+    },
     methods:{
         handleActive(){
 
