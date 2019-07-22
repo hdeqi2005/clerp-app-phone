@@ -159,7 +159,7 @@ export default {
   mounted(){
     // this.searchForm.startDate = moment().format('YYYY-MM-DD')
     // this.searchForm.endDate = moment().add(1,'months').format('YYYY-MM-DD')
-     this.searchForm.startDate =moment().add('month', 0).format('YYYY-MM') + '-01'
+     this.searchForm.startDate =moment().add(0,'month').format('YYYY-MM') + '-01'
      this.searchForm.endDate =moment().format('YYYY-MM-DD')
   },
   methods:{

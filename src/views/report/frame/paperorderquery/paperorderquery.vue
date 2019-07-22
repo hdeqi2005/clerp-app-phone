@@ -1,33 +1,36 @@
 <template>
   <div id="app">
         <headerview title='订单查询' @onClickRight="onClickRight"></headerview>
+         <!-- 其它内存占用高度 -->
+         <div id="otherContent">
          <!--过滤按钮 -->
-         <filterBtn @handleFilterData='handleFilterData' :currentFilterType="currentFilterType"></filterBtn>
-          <van-swipe @change="onChangeSwipe">
-              <!--按日期汇总 默认 序号：0-->
-              <van-swipe-item>
-                <van-row  class="body">
-                        <paperorderqueryBar style="height:300px;" :value="barData" text="日期汇总"></paperorderqueryBar>
-                </van-row>
-              </van-swipe-item>
-              <!--按客户汇总 序号：1-->
-              <van-swipe-item>
-                <van-row  class="body">
-                        <paperorderqueryBarByCust style="height:300px;" :value="barTopData" text="客户下单TOP20"></paperorderqueryBarByCust>
-                </van-row>
-              </van-swipe-item>
-               <!--按业务员汇总 序号：2-->
-              <van-swipe-item>
-                <van-row  class="body">
-                        <paperorderqueryBarByCust style="height:300px;" :value="barTopData" text="业务员TOP20"></paperorderqueryBarByCust>
-                </van-row>
-              </van-swipe-item>
-            </van-swipe>
-          <reportDataTable 
+            <filterBtn @handleFilterData='handleFilterData' :currentFilterType="currentFilterType"></filterBtn>
+              <van-swipe @change="onChangeSwipe">
+                  <!--按日期汇总 默认 序号：0-->
+                  <van-swipe-item>
+                    <van-row  class="body">
+                            <paperorderqueryBar style="height:300px;" :value="barData" text="日期汇总"></paperorderqueryBar>
+                    </van-row>
+                  </van-swipe-item>
+                  <!--按客户汇总 序号：1-->
+                  <van-swipe-item>
+                    <van-row  class="body">
+                            <paperorderqueryBarByCust style="height:300px;" :value="barTopData" text="客户下单TOP20"></paperorderqueryBarByCust>
+                    </van-row>
+                  </van-swipe-item>
+                  <!--按业务员汇总 序号：2-->
+                  <van-swipe-item>
+                    <van-row  class="body">
+                            <paperorderqueryBarByCust style="height:300px;" :value="barTopData" text="业务员TOP20"></paperorderqueryBarByCust>
+                    </van-row>
+                  </van-swipe-item>
+                </van-swipe>
+      </div>
+           <reportDataTable   :height="tableHeight"
                               :dataColumns="dataColumns"
                               :dataSource="dataSource"
                               :error-content="errorContent">
-                     </reportDataTable>
+          </reportDataTable>
            <van-popup  position="bottom"
                       :style="{ height: 'auto' }" v-model="showSearchForm">
                       <searchForm @handleSearch="handleSearch" :IsShowCustomerList="true" :IsShowMethodOfSumList="true"></searchForm>
@@ -54,7 +57,9 @@ export default {
   components:{searchForm,paperorderqueryBar,filterBtn,reportDataTable,paperorderqueryBarByCust},
    data(){
    return {
-     currentFilterType:'',
+      dataWindowH: window.innerHeight || document.body.clientHeight,
+      tableHeight: window.innerHeight || document.body.clientHeight,
+      currentFilterType:'',
       barTopData:[],
       barData:[],//图表数据
       errorContent:'数据加载中...',
@@ -179,8 +184,15 @@ export default {
                                    
     }
   },
+   mounted(){
+     let _self =this
+     this.$nextTick(()=>{
+            _self.tableHeight =_self.getLeftHeight()
+            //console.log('_self.tableHeight:'+_self.tableHeight)
+     })
+   },
   created(){ 
-     this.searchParams.startDate =moment().add('month', 0).format('YYYY-MM') + '-01'
+     this.searchParams.startDate =moment().add(0, 'month').format('YYYY-MM') + '-01'
      this.searchParams.endDate =moment().format('YYYY-MM-DD')
     //实例已经在内存中创建OK，此时 data 和 methods 已经创建OK，此时还没有开始 编译模板
     this.getDataSource()
@@ -195,7 +207,7 @@ export default {
             this.searchParams.endDate =moment().format('YYYY-MM-DD')
              break
           case 'month':
-            this.searchParams.startDate =moment().add('month', 0).format('YYYY-MM') + '-01'
+            this.searchParams.startDate =moment().add(0, 'month').format('YYYY-MM') + '-01'
             this.searchParams.endDate =moment().format('YYYY-MM-DD')
             break 
           case 'season':
@@ -289,5 +301,7 @@ export default {
   // text-align: center;
   // color: #2c3e50;
 }
-
+ .MarginTop10{
+              margin-top:10px;
+  }
 </style>

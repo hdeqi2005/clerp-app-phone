@@ -52,12 +52,7 @@ export default {
   methods:{
        //獲取當前頁面的菜單
        getCurrentViewMenu(){
-           let allMenu = this.menuList // this.menuList come from mixins
-           //debugger
-           if(allMenu==null || allMenu.length==0 || allMenu.constructor != Array){
-              return
-           }
-        
+          let allMenu = this.menuList // this.menuList come from mixins
           let afterFilterData = allMenu.filter(item=>{
                   return item.data.resLink=='report' ? true :false
               })

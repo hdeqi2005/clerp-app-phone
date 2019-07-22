@@ -58,14 +58,14 @@ export default {
             //debugger
             let allMenu = this.menuList // this.menuList come from mixins
             //let getTypeof = typeof(allMenu) null,array,object返回的都是‘object’
-            if(allMenu==null || allMenu.length==0 || allMenu.constructor != Array){
-              return
-            }
+            // if(allMenu==null || allMenu.length==0 || allMenu.constructor != Array){
+            //    this.turnToPage('login')
+            // }
             let afterFilterData = allMenu.filter(item=>{
                     return item.data.resLink=='index' ? true :false
                 })
             this.currentMenuList = afterFilterData[0].children
-           //  console.log('this.currentViewMenu :'+ JSON.stringify(this.currentViewMenu))
+             console.log('this.currentViewMenu :'+ JSON.stringify(this.currentViewMenu))
         },
         //导入合并方法，然后可以直接使用，和methods中方法类似，但参数需要查看原始定义方法 = this.$store.dispatch('getMenuByToken_action',params)
         // ...mapActions(['getMenuByToken_action']),

@@ -2,14 +2,18 @@
   <div id="app">
      <headerview title='送货查询' @onClickRight="onClickRight"></headerview>
                     <!--图表数据展示 -->
+                     <!-- 其它内存占用高度 -->
+                    <div id="otherContent">
                       <van-row  class="body">
                           <deliveryqueryBar style="height:300px;" :value="barData" text="生产报表图"></deliveryqueryBar>
                       </van-row>
+                     </div>
                       <van-row  class="body">
                       <!-- <van-cell :border="false" title="主体内容" >
                         <template slot="title"> -->
                            <div class="dataTable">
                               <v-table
+                              :height="tableHeight"
                               :title-row-height="20"
                               :row-height="20"
                                 title-bg-color="#3296fae0"
@@ -54,6 +58,8 @@ export default {
   components:{searchForm,deliveryqueryBar},
    data(){
     return {
+      dataWindowH: window.innerHeight || document.body.clientHeight,
+      tableHeight: window.innerHeight || document.body.clientHeight,
       barData:[],//图表数据
       errorContent:'数据加载中...',
       showSearchForm:false,
@@ -117,6 +123,13 @@ export default {
                     ]
     }
   },
+ mounted(){
+     let _self =this
+     this.$nextTick(()=>{
+            _self.tableHeight =_self.getLeftHeight()
+            //console.log('_self.tableHeight:'+_self.tableHeight)
+     })
+   },
   created(){
     //  this.searchParams.startDate =moment().add('month', 0).format('YYYY-MM') + '-01'
     //  this.searchParams.endDate =moment().format('YYYY-MM-DD')

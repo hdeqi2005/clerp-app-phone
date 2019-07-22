@@ -32,7 +32,7 @@ export const setLocalStorage = (key,value) => {
 
 // 获取数据存储
 export const getLocalStorage  = (key) => {
-  debugger
+  //debugger
   if(isApp){
     const value = $api.getStorage(key)
     if (value) return value

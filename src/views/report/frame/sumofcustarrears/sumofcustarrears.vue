@@ -1,11 +1,14 @@
 <template>
   <div id="app">
     <headerview title='客户欠款查询' @onClickRight="onClickRight"></headerview>
+                    <!-- 其它内存占用高度 -->
+                    <div id="otherContent"></div>
                     <van-row  class="body">
                     <!-- <van-cell :border="false" title="主体内容" >
                       <template slot="title"> -->
                            <div class="dataTable">
                               <v-table
+                              :height="tableHeight"
                                title-bg-color="#3296fae0"
                               :title-row-height="20"
                               :row-height="20"
@@ -48,6 +51,8 @@ export default {
   components:{searchForm},
   data(){
     return {
+      dataWindowH: window.innerHeight || document.body.clientHeight,
+      tableHeight: window.innerHeight || document.body.clientHeight,
       errorContent:'数据加载中...',
       showSearchForm:false,
       dataSource:[], //数据源
@@ -82,8 +87,27 @@ export default {
                     ]
     }
   },
+   computed:{
+    //  tableHeight(){
+    //     return this.dataWindowH - 116;
+    //   //  if(isApp){
+    //   //      return window.api.winHeight - 160;
+    //   //  }else
+    //   //  {
+    //   //     return this.dataWindowH - 100;
+       
+    //   //  }
+    //  }
+   },
+ mounted(){
+     let _self =this
+     this.$nextTick(()=>{
+            _self.tableHeight =_self.getLeftHeight()
+           // console.log('_self.tableHeight:'+_self.tableHeight)
+     })
+   },
   created(){
-      this.searchParams.startDate =moment().add('month', 0).format('YYYY-MM') + '-01'
+      this.searchParams.startDate =moment().add(0, 'month').format('YYYY-MM') + '-01'
       this.searchParams.endDate =moment().format('YYYY-MM-DD')
     //实例已经在内存中创建OK，此时 data 和 methods 已经创建OK，此时还没有开始 编译模板
     this.getDataSource()

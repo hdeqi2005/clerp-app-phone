@@ -23,16 +23,6 @@ export default {
       }
     },
     methods: {
-       getLeftHeight(){
-          let headerH = document.getElementById('appheaderM').offsetHeight
-            // console.log('headerH:'+headerH)
-          let otherH = document.getElementById('otherContent').offsetHeight
-            //console.log('otherContent:'+otherH)
-          let footerH = document.getElementById('appfooter').offsetHeight
-            // console.log('footerH:'+footerH)
-          return (this.dataWindowH -headerH -otherH -footerH -10)
-          //console.log('_self.tableHeight:'+_self.tableHeight)
-       },
         //如监听回退刷新事件
         RefreshEventListener(callback){
           window.api.addEventListener({

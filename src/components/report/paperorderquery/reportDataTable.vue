@@ -3,6 +3,7 @@
          <van-row  class="body">
                            <div class="dataTable">
                               <v-table
+                              :height="height"
                                title-bg-color="#3296fae0"
                               :title-row-height="20"
                               :row-height="20"
@@ -32,6 +33,10 @@ export default {
         }
     },
     props:{
+        height:{
+            type:Number,
+            default:200,
+        },
         dataColumns:{
             type:Array,
             default: function () {

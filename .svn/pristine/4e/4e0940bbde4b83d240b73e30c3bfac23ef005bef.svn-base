@@ -1,15 +1,16 @@
 <template>
   <div id="app">
         <headerview title='全厂综合查询' @onClickRight="onClickRight"></headerview>
-               <div id="otherContent">
-                  
                        <!--过滤按钮 -->
                      <van-row type="flex" justify="center">
                         <van-col span="6"><van-button @click="handleFilterData('day')" size="small" :type="currentFilterType=='day'? 'info': 'default'">日</van-button></van-col>
                         <van-col span="6"><van-button @click="handleFilterData('week')" size="small" :type="currentFilterType=='week'? 'info': 'default'">周</van-button></van-col>
                         <van-col span="6"><van-button @click="handleFilterData('month')" size="small" :type="currentFilterType=='month'? 'info': 'default'">月</van-button></van-col>
                       </van-row>
-                  
+                     <!--图表数据展示 -->
+                      <!-- <van-row  class="body">
+                          <compfactoryreportBar style="height:300px;" :value="barData" text="订单面积对照"></compfactoryreportBar>
+                      </van-row> -->
                      <van-swipe @change="onChangeSwipe">
                       <!--订单（面积、金额） 默认 序号：0-->
                       <van-swipe-item>
@@ -36,13 +37,12 @@
                         </van-row>
                       </van-swipe-item>
                     </van-swipe>
-      </div>
+
              <van-row  class="body">
                     <!-- <van-cell :border="false" title="主体内容" >
                       <template slot="title"> -->
                            <div class="dataTable">
                               <v-table
-                              :height="tableHeight"
                               :title-row-height="20"
                                 title-bg-color="#3296fae0"
                               :row-height="20"
@@ -86,8 +86,6 @@ export default {
   mixins:[baseMixin],
    data(){
     return {
-      dataWindowH: window.innerHeight || document.body.clientHeight,
-      tableHeight: window.innerHeight || document.body.clientHeight,
       currentFilterType:'month',
       barData:[],//图表数据
       errorContent:'数据加载中...',
@@ -177,17 +175,8 @@ export default {
                     ]
     }
   },
-  computed:{
-   },
-   mounted(){
-     let _self =this
-     this.$nextTick(()=>{
-            _self.tableHeight =_self.getLeftHeight()
-            //console.log('_self.tableHeight:'+_self.tableHeight)
-     })
-   },
   created(){
-     this.searchParams.startDate =moment().add(0, 'month').format('YYYY-MM') + '-01'
+     this.searchParams.startDate =moment().add('month', 0).format('YYYY-MM') + '-01'
      this.searchParams.endDate =moment().format('YYYY-MM-DD')
      this.dataColumns = this.dataColumnsM0
     //实例已经在内存中创建OK，此时 data 和 methods 已经创建OK，此时还没有开始 编译模板
@@ -251,7 +240,7 @@ export default {
             this.searchParams.endDate =moment().format('YYYY-MM-DD')
              break
           case 'month':
-            this.searchParams.startDate =moment().add(0,'month').format('YYYY-MM') + '-01'
+            this.searchParams.startDate =moment().add('month', 0).format('YYYY-MM') + '-01'
             this.searchParams.endDate =moment().format('YYYY-MM-DD')
             break 
         }
@@ -275,9 +264,6 @@ export default {
 </script>
 
 <style lang="less">
- .MarginTop10{
-              margin-top:10px;
-  }
 #app {
    font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

@@ -1,6 +1,10 @@
 <template>
-  <div class="NavBarcontainer"  >
-        <van-nav-bar id="appheader"   :fixed="true"
+  <div id="appheaderM"   class="NavBarcontainer"  >
+        <!-- 占位符 -->
+        <van-nav-bar title="首页" left-text="返回" left-arrow>
+          <van-icon name="search" slot="right" />
+        </van-nav-bar>
+        <van-nav-bar id="appheader"  :fixed="true"
                 :title="title"
                 left-text=""
                 @click-left="onClickLeft"
@@ -23,9 +27,9 @@
         <slot></slot>
         <!-- // 具名插槽 -->
         <slot name="down"></slot>
-
+        <div class="MarginTop10"> </div>
             <!-- 占位符 -->
-         <div class="headerMargin"></div>
+         <!-- <div class="headerMargin"></div> -->
     </div>
 </template>
 <script>
@@ -102,6 +106,9 @@ export default {
 }
 </script>
 <style scoped>
+ .MarginTop10{
+              margin-top:10px;
+  }
 .headerMargin{
     margin-top:50px;
     /* height: 46px; */

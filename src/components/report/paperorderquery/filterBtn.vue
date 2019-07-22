@@ -25,7 +25,7 @@ export default {
           //过滤数据BY  周 月 季
             handleFilterData(type){
                 //debugger
-                this.currentFilterType = type
+               // this.currentFilterType = type
                 this.$emit('handleFilterData',type)
             },
     }

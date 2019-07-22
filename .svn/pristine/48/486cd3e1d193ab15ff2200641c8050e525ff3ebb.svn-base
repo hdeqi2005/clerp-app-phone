@@ -1,0 +1,22 @@
+// import { login, logout, getUserInfo, } from '@/api/app'
+import {setLocalStorage,getLocalStorage } from '@/libs/util'
+// import { GetGuid } from '@/libs/tools'
+// const serverBusyTips="服务繁忙，请稍后再试！";
+
+export default {
+    state: {
+      currentSelectedMenu: getLocalStorage('currentSelectedMenu')|| '0',
+    },
+    //获取：this.$store.getters.currentSelectedMenu_getter
+    getters:{
+        currentSelectedMenu_getter:state=>state.currentSelectedMenu
+    },
+    mutations: {
+      setCurrentSelectdMenu (state, data) {
+        state.currentSelectedMenu = data
+        setLocalStorage('currentSelectedMenu')
+      },
+    },
+    actions: {}
+
+  }
