@@ -1,0 +1,181 @@
+<template>
+	<div id="app">
+		<headerview title='特价审批' :showRightbtn="false"></headerview>
+		<van-pull-refresh v-model="isLoading" @refresh="searchPOData">
+			<van-panel v-for="(item,index) in specPriceItems" :key="index" class="purchases-panel">
+				<div slot="header" class="purchases-header" @click="searchPODetail(index)">
+					<div>
+						{{item.co_CustName}}-￥{{item.co_SPecPrice}}
+					</div>
+					<div>
+						<van-icon name="arrow" color="#949494" />
+					</div>
+				</div>
+				<div>
+					<div class="purchases-content">
+						<span>订单编号:{{item.co_No}}</span>
+						<span>客户名称:{{item.co_CustName}}</span>
+					</div>
+					<div class="purchases-content">
+						<span>纸质:{{item.co_ArtId}}</span>
+						<span>愣别:{{item.co_ArtLB}}</span>
+					</div>
+					<div class="purchases-content">
+						<span>{{item.co_Date}}</span>
+						<span style="color: red;">未审批</span>
+					</div>
+				</div>
+			</van-panel>
+		</van-pull-refresh>
+
+		<van-popup v-model="popupShow" position="left" :style="{ height: '100%',width:'100%'}">
+			<headerview title='特价详情' :showRightbtn="false" :click-left="()=>{popupShow=false}"></headerview>
+			<div style="text-align: left;line-height: 0.8rem;padding: 0 0.4rem;">
+				<p>
+					<label>订单编号:{{detailItems.co_No}}</label>
+				</p>
+				<p>
+					<label>客户名称:{{detailItems.co_CustName}}</label>
+				</p>
+				<p>
+					<label>特价:￥{{detailItems.co_SPecPrice}}</label>
+				</p>
+				
+				<p>
+					<label>纸质:{{detailItems.co_ArtId}}</label>
+				</p>
+				<p>
+					<label>愣别:{{detailItems.co_ArtLB}}</label>
+				</p>
+				<p>
+					<label>纸长:{{detailItems.co_CSize_l}}</label>
+				</p>
+				<p>
+					<label>纸宽:{{detailItems.co_CSize_w}}</label>
+				</p>
+				<p>
+					<label>数量:{{detailItems.co_Qty}}</label>
+				</p>
+				<p>
+					<label>订单日期:{{detailItems.co_Date}}</label>
+				</p>
+			</div>
+			<div class="purchases-detail-btn-area">
+				<van-button type="info" size="large" @click="popupExplainShow=true;formItems.approveState=1">同意</van-button>
+				<van-button type="default" size="large" @click="popupExplainShow=true;formItems.approveState=0">不同意</van-button>
+			</div>
+		</van-popup>
+
+		<van-dialog v-model="popupExplainShow" title="审批说明" show-cancel-button @confirm="approvePaperSpecPrice()">
+			<van-field v-model="formItems.approvalExplain" type="textarea" placeholder="请输入审批说明" rows="3" autosize />
+		</van-dialog>
+	</div>
+</template>
+<script>
+	import baseMixin from '@/mixins'
+	import {
+		mapActions
+	} from 'vuex'
+	export default {
+		name: 'CompFactoryReport',
+		mixins: [baseMixin],
+		components: {
+			
+		},
+		data() {
+			return {
+				isLoading:false,
+				popupShow: false,
+				popupExplainShow: false,
+				specPriceItems: [],
+				kindName: '',
+				singlePrice: 0,
+				detailItems:{},
+				formItems: {
+					coId: '',
+					approvalExplain: '',
+					approveState: 0
+				}
+			}
+		},
+		created() {
+			this.searchPOData();
+		},
+		methods: {
+			...mapActions(['searchSpecPriceAction', 'approvePaperSpecPriceAction']),
+			searchPOData() {
+				this.searchSpecPriceAction().then(res => {
+					this.specPriceItems = res.data;
+					this.isLoading = false;
+					//console.log(res);
+				}).catch(err => {
+					this.errorContent = '暂无数据';
+					this.$toast('获取数据失败:' + err);
+					this.isLoading = false;
+				})
+			},
+			searchPODetail(index) {
+				this.detailItems = this.specPriceItems[index];
+				this.popupShow = true;
+				this.formItems.coId = this.detailItems.ID1;
+				this.formItems.approvalExplain = '';
+			},
+			approvePaperSpecPrice() {
+				this.approvePaperSpecPriceAction(this.formItems).then(res => {
+					this.$toast('审批成功');
+				}).catch(err => {
+					this.errorContent = '暂无数据';
+					this.$toast('执行失败:' + err);
+				});
+			}
+		},
+		filters: {
+			timeClear: function(value) {
+				if (value) {
+					return value.replace('00:00:00', '');
+				}
+				return value;
+			}
+		}
+	}
+</script>
+
+<style lang="less">
+	#app {
+		font-family: 'Avenir', Helvetica, Arial, sans-serif;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		// text-align: center;
+		// color: #2c3e50;
+		//background-color: #E4E4E4;
+	}
+
+	.purchases-content,
+	.purchases-header {
+		justify-content: space-between;
+		display: flex;
+		padding: 0.1rem 0.4rem;
+	}
+
+	.purchases-content span {
+		color: #949494;
+	}
+
+	.purchases-panel {
+		margin-bottom: 0.3rem;
+	}
+
+	.purchases-header {
+		border-bottom: 1px dashed #E4E4E4;
+		font-size: 0.4rem;
+		line-height: 0.4rem;
+		padding: 0.2rem 0.4rem;
+	}
+
+	.purchases-detail-btn-area {
+		display: flex;
+		position: fixed;
+		width: 100%;
+		bottom: 0;
+	}
+</style>

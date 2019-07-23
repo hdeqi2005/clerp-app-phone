@@ -1,0 +1,66 @@
+<template>
+    <div>
+         <van-row  class="body">
+                           <div class="dataTable">
+                              <v-table
+                              :height="height"
+                               title-bg-color="#3296fae0"
+                              :title-row-height="20"
+                              :row-height="20"
+                              id="dt_paperorderquery"
+                              ref="dt_paperorderquery"
+                              is-vertical-resize
+                              style="width:100%;"
+                              is-horizontal-resize
+                              :columns="dataColumns"
+                              :table-data="dataSource"
+                              :show-vertical-border="true"
+                              :error-content="errorContent"
+                              even-bg-color="#f4f4f4"
+                              row-hover-color="#eee"
+                              row-click-color="#edf7ff">
+                              </v-table>
+                          </div>
+                 </van-row>
+    </div>
+</template>
+<script>
+export default {
+    name:'reportDataTalbe',
+    data(){
+        return {
+            
+        }
+    },
+    props:{
+        height:{
+            type:Number,
+            default:200,
+        },
+        dataColumns:{
+            type:Array,
+            default: function () {
+                return []
+            }
+        },
+        dataSource:{
+            type:Array,
+            default: function () {
+                return []
+            }
+        },
+        errorContent:{
+            type:String,
+            default:'数据加载中...'
+        }
+    },
+    methods:{
+     
+    }
+}
+</script>
+<style>
+.table-title {
+    color: white;
+ }
+</style>

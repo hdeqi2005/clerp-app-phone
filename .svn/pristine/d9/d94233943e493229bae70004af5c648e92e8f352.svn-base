@@ -1,0 +1,126 @@
+<template>
+  <div class="NavBarcontainer"  >
+        <van-nav-bar id="appheader"   :fixed="true"
+                :title="title"
+                left-text=""
+                @click-left="onClickLeft"
+                @click-right="onClickRight"
+                >
+                 <template slot="left" >
+                    <div v-show="showLeftbtn">
+                      <van-icon size="20" color="white" name="arrow-left" />
+                    </div>
+                 </template>
+                 <template slot="right">
+                    <div v-show="showRightbtn">
+                        <van-icon size="20" color="white" name="search" />
+                    </div>
+                 </template>
+         </van-nav-bar>
+           <!-- // 具名插槽 -->
+        <slot name="up"></slot>
+        <!-- // 匿名插槽 -->
+        <slot></slot>
+        <!-- // 具名插槽 -->
+        <slot name="down"></slot>
+
+            <!-- 占位符 -->
+         <div class="headerMargin"></div>
+    </div>
+</template>
+<script>
+export default {
+    name:'header-view',
+    props:{
+        title:{
+            type:String,
+            default:'晨龙ERP'
+        },
+        showLeftbtn:{
+            type:Boolean,
+            default:true
+        },
+        showRightbtn:{
+            type:Boolean,
+            default:true
+        },
+       returnUrl:{
+            type:String,
+            default:''
+        },
+       closeToWin:{
+            type:Boolean,
+            default:false
+        },clickLeft:{
+			type:Function
+		}
+    },
+    data(){
+        return{
+
+        }
+    },
+    mounted(){
+        //   let header = $api.byId('appheader')
+        //   $api.fixStatusBar(header);
+    },
+    methods: {
+    onClickLeft() {
+			if(this.clickLeft){
+				this.clickLeft();
+				return;
+			}
+            if(this.returnUrl!=""){
+                 let params ={
+                     name:this.returnUrl
+                 }
+                switchMethods.turnToPage(params)
+            }else{
+                if(this.$config.isRunApp){
+                    if(this.closeToWin){
+                     window.api.closeToWin({
+                        name: 'root'
+                      })
+                    }
+                   window.api.closeWin()
+                }else{
+                     location.href="javascript:history.go(-1)";  
+                }
+            }
+         //this.sendRefreshEvent()
+        },
+    onClickRight() {
+       this.$emit('onClickRight')
+    }
+  },
+    //发送刷新界面事件
+    sendRefreshEvent(){
+            if(this.$config.isRunApp){
+                window.api.sendEvent({
+                name: 'refreshEvent',
+                extra: {
+                    key1: 'value1',
+                }
+            });
+          }  
+        }
+    
+}
+</script>
+<style scoped>
+.headerMargin{
+    margin-top:50px;
+    /* height: 46px; */
+    /* padding-top: 70px; */
+}
+.NavBarcontainer{
+    background-color:#3296fa;
+}
+.van-nav-bar{
+      background-color:#3296fa
+    }
+.van-nav-bar__title{
+        font-weight: bold;
+        color: #fff;
+} 
+</style>

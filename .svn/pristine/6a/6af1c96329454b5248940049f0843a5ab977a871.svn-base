@@ -1,0 +1,80 @@
+<template>
+  <div id="app">
+        <headerview :showLeftbtn="false" :showRightbtn="false" title="报表"></headerview>
+            <van-row  class="body">   <!-- <van-cell @click="turnToPage('compfactoryreport')" title="全厂综合报表" is-link />
+                    <van-cell @click="turnToPage('deliveryquery')" title="送货查询" is-link />
+                    <van-cell @click="turnToPage('paperorderquery')" title="订单查询" is-link />
+                    <van-cell @click="turnToPage('sumofcustarrears')" title="客户欠款汇总表" is-link /> -->
+                  <!-- <van-cell-group>
+                    <van-cell v-for="(item,index) in currentViewMenu" :key="index" @click="turnToPage(`${item.data.resLink}`)" :title="item.title" is-link />
+                </van-cell-group> -->
+                 <van-grid square :border="false" :column-num="3">
+                    <van-grid-item
+                        v-for="(item,index) in currentViewMenu"
+                        @click="turnToPage(`${item.data.resLink}`)"
+                        :key="index"
+                        :text="item.title"
+                    >
+                    <template slot="icon" >
+                        <div>
+                        <van-icon size="40" color="#3296fa" :name="item.data.resIcon" />
+                        </div>
+                    </template>
+                    </van-grid-item>
+                </van-grid>
+            </van-row> 
+         <footerview></footerview>
+  </div>
+</template>
+<script>
+import { getToken, setToken,setLocalStorage,getLocalStorage } from '@/libs/util'
+import baseMixin from '@/mixins'
+import {mapActions} from 'vuex'
+export default {
+  name:'reportView',
+  mixins:[baseMixin],
+  data(){
+    return {
+        currentViewMenu:[],
+    }
+  },
+  computed:{
+      // menuList () {
+      //   let tempMenuList =this.$store.getters.menuList_getters
+      //   return tempMenuList
+      // }
+  },
+  mounted(){
+     this.$nextTick(()=>{
+        this.getCurrentViewMenu()
+     })
+  },
+  methods:{
+       //獲取當前頁面的菜單
+       getCurrentViewMenu(){
+           let allMenu = this.menuList // this.menuList come from mixins
+           //debugger
+           if(allMenu==null || allMenu.length==0 || allMenu.constructor != Array){
+              return
+           }
+        
+          let afterFilterData = allMenu.filter(item=>{
+                  return item.data.resLink=='report' ? true :false
+              })
+          this.currentViewMenu = afterFilterData[0].children
+          // console.log('this.currentViewMenu :'+ JSON.stringify(this.currentViewMenu))
+       }
+  }
+}
+</script>
+
+<style lang="less">
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  // text-align: center;
+  // color: #2c3e50;
+}
+
+</style>
