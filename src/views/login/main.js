@@ -1,37 +1,48 @@
-import Vue from 'vue'
-import App from './login.vue'
-import router from '@/router'
-import store from '@/store'
-import config from '@/config'
-import 'lib-flexible/flexible.js'  //手機適配
-import Vant from 'vant'
-import 'vant/lib/index.css'
-import '@/assets/style/resetUi.css' //重置樣式
-Vue.use(Vant)
-import FastClick from 'fastclick'
-// 使用
-FastClick.attach(document.body)
-/**
- * @description 全局注册应用配置 add by andy 2019-04-22  
- */
-Vue.prototype.$config = config
+// import Vue from 'vue'
+ //import App from './login.vue'
+// import router from '@/router'
+// import store from '@/store'
+// import config from '@/config'
+// import 'lib-flexible/flexible.js'  //手機適配
+// import Vant from 'vant'
+// import 'vant/lib/index.css'
+// import '@/assets/style/resetUi.css' //重置樣式
+// import FastClick from 'fastclick'
 
-Vue.config.productionTip = false
-if(config.isRunApp){
-  window.apiready = () => {
-    new Vue({
-      router,
-      store,
-      render: h => h(App)
-    }).$mount('#app')
+// Vue.use(Vant)
+// FastClick.attach(document.body)
+// Vue.prototype.$config = config
+// Vue.config.productionTip = false
+
+// if(config.isRunApp){
+//   window.apiready = () => {
+//     new Vue({
+//       router,
+//       store,
+//       render: h => h(App)
+//     }).$mount('#app')
     
-  }
-}
-else{
-  new Vue({
-    router,
-    store,
-    render: h => h(App)
-  }).$mount('#app')
+//   }
+// }
+// else{
+//   new Vue({
+//     router,
+//     store,
+//     render: h => h(App)
+//   }).$mount('#app')
   
+// }
+
+import App from './login.vue'
+import BaseMain  from '@/main'
+class Main extends BaseMain {
+   constructor (config) {
+     super(config)
+   }
+ } 
+
+let config = {
+  enterPageName:App
 }
+const subMain = new Main(config)
+// export default subMain
