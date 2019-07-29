@@ -2,7 +2,7 @@ const path = require('path') //使用node.js的内置path模块 //require 中的
 const pages = require('./src/libs/pages') //默认是使用单页面开发
 //const HtmlWebpackPlugin = require('html-webpack-plugin')
 const resolve = dir => path.join(__dirname, dir)//path.join() 方法使用平台特定的分隔符作为定界符将所有给定的 path 片段连接在一起，然后规范化生成的路径。
-// const CompressionWebpackPlugin = require('compression-webpack-plugin')
+ const CompressionWebpackPlugin = require('compression-webpack-plugin')
 // const productionGzipExtensions = ['js', 'css']
 // const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
 const BASE_URL = process.env.NODE_ENV === 'production' ? './' : '/'
@@ -29,13 +29,9 @@ module.exports = {
       disable: process.env.NODE_ENV !== "production"
     })).end()
 
-      // if (process.env.ANALYZ) {
-      //    config.plugin('webpack-bundle-analyzer')
-      //   .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
-      // }
+
    // 首页不预先加载其他页面的css和js，首页能更快加载
     // 移除 prefetch 插件
-
 
       config.plugins.delete("prefetch");
       // 移除 preload 插件
@@ -78,47 +74,11 @@ module.exports = {
       .set("@css", resolve("src/assets/styles/css"))
       .set("@scss", resolve("src/assets/styles/scss"))
   },
- // 如果这个值是一个对象，则会通过 webpack-merge 合并到最终的配置中
-// 如果你需要基于环境有条件地配置行为，或者想要直接修改配置，那就换成一个函数 (该函数会在环境变量被设置之后懒执行)。
-//该方法的第一个参数会收到已经解析好的配置。在函数内，你可以直接修改配置，或者返回一个将会被合并的对象
-//  configureWebpack: config => {
-//      if (process.env.NODE_ENV === 'production') {
-//       // 为生产环境修改配置...
-//           // config.plugins.push(
-//           //   new CompressionWebpackPlugin({
-//           //       asset: '[path].gz[query]',
-//           //       algorithm: 'gzip',
-//           //       test: new RegExp('\\.(' + productionGzipExtensions.join('|') + ')$'),
-//           //       threshold: 10240,
-//           //       minRatio: 0.8
-//           //   })
-//           // )
-//     } else {
-//       // 为开发环境修改配置...
-//     }
-// },
-
 
 
 configureWebpack:config=>{
   if (process.env.NODE_ENV === 'production') {
          
-      // return{
-      //     plugins: [
-      //         new CompressionWebpackPlugin({
-      //             algorithm: 'gzip',//默认值
-      //             test:/\.js$|\.html$|.\css/, //匹配文件名
-      //             threshold: 10240,//对超过10k的数据压缩
-      //             deleteOriginalAssets: false //不删除源文件
-      //             //配置参数详解
-      //             // asset： 目标资源名称。 [file] 会被替换成原始资源。[path] 会被替换成原始资源的路径， [query] 会被替换成查询字符串。默认值是 "[path].gz[query]"。
-      //             // algorithm： 可以是 function(buf, callback) 或者字符串。对于字符串来说依照 zlib 的算法(或者 zopfli 的算法)。默认值是 "gzip"。
-      //             // test： 所有匹配该正则的资源都会被处理。默认值是全部资源。
-      //             // threshold： 只有大小大于该值的资源会被处理。单位是 bytes。默认值是 0。
-      //             // minRatio： 只有压缩率小于这个值的资源才会被处理。默认值是 0.8。
-      //         })
-      //     ]
-      // }
 
        return{
         plugins: [
@@ -129,8 +89,24 @@ configureWebpack:config=>{
               // dll过程生成的manifest文件
               manifest: require('./public/vendor/vendor-manifest.json')
              // manifest: require(path.join(process.cwd(), "dll", "vendor-manifest.json"))
-          })
+          }),
+           // 如果这个值是一个对象，则会通过 webpack-merge 合并到最终的配置中
+          // 如果你需要基于环境有条件地配置行为，或者想要直接修改配置，那就换成一个函数 (该函数会在环境变量被设置之后懒执行)。
+          //该方法的第一个参数会收到已经解析好的配置。在函数内，你可以直接修改配置，或者返回一个将会被合并的对象
+            new CompressionWebpackPlugin({
+                  algorithm: 'gzip',//默认值
+                  test:/\.js$|\.html$|.\css/, //匹配文件名
+                  threshold: 10240,//对超过10k的数据压缩
+                  deleteOriginalAssets: true //不删除源文件
+                  //配置参数详解
+                  // asset： 目标资源名称。 [file] 会被替换成原始资源。[path] 会被替换成原始资源的路径， [query] 会被替换成查询字符串。默认值是 "[path].gz[query]"。
+                  // algorithm： 可以是 function(buf, callback) 或者字符串。对于字符串来说依照 zlib 的算法(或者 zopfli 的算法)。默认值是 "gzip"。
+                  // test： 所有匹配该正则的资源都会被处理。默认值是全部资源。
+                  // threshold： 只有大小大于该值的资源会被处理。单位是 bytes。默认值是 0。
+                  // minRatio： 只有压缩率小于这个值的资源才会被处理。默认值是 0.8。
+              })
         ],
+
       }
   }
 },

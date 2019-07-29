@@ -62,7 +62,7 @@ export default {
             }
             let _self=this
             this.$store.dispatch('getNoticeInfoAction',params).then(res=>{
-                debugger
+                //debugger
                   _self.hasUpdate =true //已經更新
                   if(Number(res.data)>0){
                         // console.log('獲取通知返回信息'+JSON.stringify(res))
