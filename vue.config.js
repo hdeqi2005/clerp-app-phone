@@ -1,9 +1,10 @@
 const path = require('path') //使用node.js的内置path模块 //require 中的路径总是相对于包含它的文件，跟你的工作目录没有关系。
 const pages = require('./src/libs/pages') //默认是使用单页面开发
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+//const HtmlWebpackPlugin = require('html-webpack-plugin')
 const resolve = dir => path.join(__dirname, dir)//path.join() 方法使用平台特定的分隔符作为定界符将所有给定的 path 片段连接在一起，然后规范化生成的路径。
-const CompressionWebpackPlugin = require('compression-webpack-plugin')
-const productionGzipExtensions = ['js', 'css']
+// const CompressionWebpackPlugin = require('compression-webpack-plugin')
+// const productionGzipExtensions = ['js', 'css']
+// const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
 const BASE_URL = process.env.NODE_ENV === 'production' ? './' : '/'
 const webpack  = require('webpack') //new 2019-07-23
 module.exports = {
@@ -36,15 +37,16 @@ module.exports = {
     // 移除 prefetch 插件
 
 
-    config.plugins.delete("prefetch");
-    // 移除 preload 插件
-    config.plugins.delete('preload');
-    // 压缩代码
-      config.optimization.minimize(true);
+      config.plugins.delete("prefetch");
+      // 移除 preload 插件
+      config.plugins.delete('preload');
+      // 压缩代码
+        config.optimization.minimize(true);
     // 分割代码
-      config.optimization.splitChunks({
-        chunks: 'all'
-    })    
+        config.optimization.splitChunks({
+          name: 'chunk-vendors',
+          chunks: 'all'
+      })    
 
 
     // 公共资源提取，
@@ -54,18 +56,19 @@ module.exports = {
  // common提取的应该是除了vendors提取后，剩余的满足条件的公共静态模块
  // 我们的项目不需要common，所以将common置为{}，覆盖默认common配置
 
-        config.optimization.splitChunks({
-         cacheGroups: {
-          vendors: {
-              name: 'chunk-vendors',
-              minChunks: 13,
-              test: /node_modules/,
-              priority: -10,
-              chunks: 'initial'
-          },
-          common: {}
-      }
-    })
+    //     config.optimization.splitChunks({
+    //      cacheGroups: {
+    //       vendors: {
+    //           name: 'chunk-vendors',
+    //           minChunks: 13,
+    //           test: /node_modules/,
+    //           priority: -10,
+    //           chunks: 'initial'
+    //       },
+    //       common: {}
+    //   }
+    // })
+
     //修改 Loader 选项
     //别名配置
     config.resolve.alias
@@ -99,6 +102,7 @@ module.exports = {
 
 configureWebpack:config=>{
   if (process.env.NODE_ENV === 'production') {
+         
       // return{
       //     plugins: [
       //         new CompressionWebpackPlugin({
@@ -116,17 +120,18 @@ configureWebpack:config=>{
       //     ]
       // }
 
-      //  return{
-      //   plugins: [
-      //     // dllPlugin关联配置
-      //     new webpack.DllReferencePlugin({
-      //         // 跟dll.config里面DllPlugin的context一致
-      //         context: process.cwd(), 
-      //         // dll过程生成的manifest文件
-      //         manifest: require(path.join(process.cwd(), "dll", "vendor-manifest.json"))
-      //     })
-      //   ],
-      // }
+       return{
+        plugins: [
+          // dllPlugin关联配置 //使用前 必须 执行 npm run dll 
+          new webpack.DllReferencePlugin({
+              // 跟dll.config里面DllPlugin的context一致
+              context: process.cwd(), 
+              // dll过程生成的manifest文件
+              manifest: require('./public/vendor/vendor-manifest.json')
+             // manifest: require(path.join(process.cwd(), "dll", "vendor-manifest.json"))
+          })
+        ],
+      }
   }
 },
 

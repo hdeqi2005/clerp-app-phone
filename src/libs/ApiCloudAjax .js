@@ -78,6 +78,7 @@ var options = {
     }
   }
   
+  
   class ApiAjax {
     /**
      * 构造方法

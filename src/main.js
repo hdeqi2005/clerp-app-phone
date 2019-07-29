@@ -20,7 +20,7 @@ import FastClick from 'fastclick'
 //  (6)、constructor(){}是一个默认方法，如果没有添加，会自动添加一个空的。
 //  (7)、constructor默认返回实例对象（this），完全可以指定返回其他的对象。
 //  (8)、必须用new调用
-//  (9)、不存在变量提升
+//  (9)、不存在变量提升 所以需要先定义再使用
 //  (10)、当用一个变量去接受class时，可以省略classname
 //  (11)、es6不提供私有方法。
 
@@ -36,21 +36,28 @@ import FastClick from 'fastclick'
 //  (21)、静态属性只能 ThreeDPoint.name = "123" 声明 （与static没什么关系）
 // (22)、constructor中必须调用super,因为子类中没有this,必须从父类中继承。
 
+
+
 /**
-*
-*@desc 入口函数 基类 方便 继承使用
-*
-*
-*/
+ * @desc main 入口函数 基类 方便 继承使用
+ * 
+ * @author Andy Huang
+ * 
+ * @created 2019/07/26 16:00:24
+ */
+
 class BaseMain {
     /**
-     * 构造方法
+     * 构造方法 constructor方法是类的构造函数的默认方法，通过new命令生成对象实例时，自动调用该方法。
      * @param  {object} config 配置参数
      */
      constructor(config) {
-        this.initPlugins()
+       //constructor中定义的属性可以称为实例属性（即定义在this对象上） 
+       //constructor外声明的属性都是定义在原型上的，可以称为原型属性（即定义在class上) ==》类.prototype.addFn=function(){}
+       //方法之间之间调用使用this.方法名称()
+        this.initPlugins() 
         this.initData(config.enterPageName)
-        //console.log('BaseMain constructor start...')
+
      }
       /**
       * @desc 初始化插件

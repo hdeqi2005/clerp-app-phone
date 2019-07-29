@@ -62,16 +62,18 @@ export default {
             }
             let _self=this
             this.$store.dispatch('getNoticeInfoAction',params).then(res=>{
+                debugger
                   _self.hasUpdate =true //已經更新
                   if(Number(res.data)>0){
                         // console.log('獲取通知返回信息'+JSON.stringify(res))
                      let updateParams ={
                          noticeCount:res.data
                      }
-                  //console.log(index+':_self.currentMenuList[index]: '+JSON.stringify(_self.currentMenuList[index]))
+               
                  _self.currentMenuList[index] = Object.assign({}, _self.currentMenuList[index], updateParams)
-                 _self.currentMenuList= _self.currentMenuList.sort() //觸發更新
-                  //console.log(index+':新_self.currentMenuList[index]: '+JSON.stringify(_self.currentMenuList[index]))
+                _self.currentMenuList= _self.currentMenuList.sort() //觸發更新
+
+                 //_self.$set(_self.currentMenuList[index], `noticeCount`, res.data)
                   }
             }).catch(err=>{
                  _self.hasUpdate =true
