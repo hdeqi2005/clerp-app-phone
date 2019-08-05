@@ -6,15 +6,15 @@ import {setLocalStorage,getLocalStorage } from '@/libs/util'
 export default {
     state: {
       currentSelectedMenuIndex: getLocalStorage('currentSelectedMenuIndex'),
-      currentSelectedMenu: getLocalStorage('currentSelectedMenu')
+      currentSelectedFooterMenu: getLocalStorage('currentSelectedFooterMenu')
     },
     //获取：this.$store.getters.currentSelectedMenu_getter
     getters:{
         currentSelectedMenu_getter:(state)=>{
-            if(state.currentSelectedMenu==''){
+            if(state.currentSelectedFooterMenu==''){
                 return 'index'
             }
-            return state.currentSelectedMenu
+            return state.currentSelectedFooterMenu
         },
         currentSelectedMenuIndex_getter:(state)=>{
            // debugger
@@ -27,9 +27,9 @@ export default {
     },
     //设置：this.$store.commit('setCurrentSelectdMenu',data)
     mutations: {
-      setCurrentSelectdMenu (state, data) {
-        state.currentSelectedMenu = data
-        setLocalStorage('currentSelectedMenu',data)
+      setCurrentSelectdFooterMenu (state, data) {
+        state.currentSelectedFooterMenu = data
+        setLocalStorage('currentSelectedFooterMenu',data)
       },
       setCurrentSelectdMenuIndex (state, data) {
         state.currentSelectedMenuIndex = data

@@ -120,7 +120,7 @@ export default {
             // _self.menuList =this.$store.getters.menuList_getters
            // console.log('_self.menuList:'+_self.menuList)
       })
-      if(getToken()=="" || this.menuList==null || this.menuList.length==0 || this.menuList.constructor != Array){
+      if(getLocalStorage('TOKEN')=="" || this.menuList==null || this.menuList.length==0 || this.menuList.constructor != Array){
           this.turnToPage('login')
       }
 

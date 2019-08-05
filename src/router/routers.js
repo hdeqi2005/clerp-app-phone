@@ -8,6 +8,10 @@ import SumOfCustArrears from '@/views/report/frame/sumofcustarrears/sumofcustarr
 import Purchases from '@/views/verify/frame/purchases/App.vue'
 import Material from '@/views/verify/frame/material/App.vue'
 import Tax from '@/views/verify/frame/tax/App.vue'
+import PaperIn from '@/views/warehouse/frame/paperIn/App.vue'
+import PaperOB from '@/views/warehouse/frame/paperOB/App.vue'
+import boxIn from '@/views/warehouse/frame/boxIn/App.vue'
+import Compfactorykanban from '@/views/report/frame/compfactorykanban/compfactorykanban.vue'
 
 export default[
     {
@@ -47,10 +51,17 @@ export default[
       //component: () => import(/* webpackChunkName: "report" */ '@/views/report/report.vue'),
     },
     {
-      //全厂综合报表 CompFactoryReport
+      //全厂综合报表 CompFactoryReport --暫時注銷，需求變更
       path: '/compFactoryReport',
       name: 'compFactoryReport',
       component: CompFactoryReport,
+     // component: () => import(/* webpackChunkName: "compFactoryReport" */ '@/views/report/frame/s_compFactoryReport/App.vue'),
+    },
+    {
+      //全厂综合报表 NEW CompFactoryReport
+      path: '/compfactorykanban',
+      name: 'compfactorykanban',
+      component: Compfactorykanban,
      // component: () => import(/* webpackChunkName: "compFactoryReport" */ '@/views/report/frame/s_compFactoryReport/App.vue'),
     },
     {
@@ -85,6 +96,17 @@ export default[
 			path:'/tax',
 			name: 'tax',
 			component: Tax
+		},{
+			path:'/paperIn',
+			name:'paperIn',
+			component:PaperIn
+		},{
+			path:'/paperOB',
+			name:'paperOB',
+			component:PaperOB
+		},{
+			path:'/boxIn',
+			name:'boxIn',
+			component:boxIn
 		}
-    
   ]

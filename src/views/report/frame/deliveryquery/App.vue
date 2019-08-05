@@ -58,7 +58,7 @@ export default {
            startDate:'2018-07-10',
            endDate:'2019-07-10',
             ctCode:'',
-            token:getToken()
+            token:getLocalStorage('TOKEN')
       },
       //数据列描述，格式化
       dataColumns: [

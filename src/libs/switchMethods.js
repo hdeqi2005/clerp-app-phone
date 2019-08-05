@@ -24,16 +24,23 @@ export const turnToPage = (params) => {
      window.api.openWin({
           name: `${params.name}`,
           url: `./${(params.name).toLowerCase()}.html`,
+          animation:{
+            type:"fade",                //动画类型（详见动画类型常量）fade 交叉淡化过渡（不支持过渡方向）
+            subType:"from_right",       //动画子类型（详见动画子类型常量）
+            duration:500                //动画过渡时间，默认300毫秒
+          },
           reload:true,
           slidBackEnabled,
           pageParam: {
-              //name: 'test'
+            keyPathId: params.keyPathId
           }
        })
     } else{
-     //测试环境
-      router.push(`/${params.name}`)
- 
+     //测试环境 1. this.$router.push() 方法中 path不能和params一起使用，否则params将无效;2.页面通过path和query传递参数
+      //router.push(name:`/${params.name}`,params:{})
+      router.push({path: `/${params.name}`, query: {
+        keyPathId: params.keyPathId
+      }})
     }
 
   }

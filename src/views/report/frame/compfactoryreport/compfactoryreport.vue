@@ -97,7 +97,7 @@ export default {
       searchParams:{
             startDate:'2018-07-10',
             endDate:'2019-07-10',
-            token:getToken()
+            token:getLocalStorage('TOKEN')
       },
       dataColumns: [],
       //订单 （面积、金额）==数据列描述，格式化

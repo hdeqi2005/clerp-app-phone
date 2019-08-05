@@ -66,7 +66,8 @@ export const login = ({ userId, pwd },callback) => {
 export const getMenuByToken = ({ token }) => {
   //参数
   let data = {
-    token
+    token,
+    isLoad:'false',
    }
    
   if(config.isRunApp){

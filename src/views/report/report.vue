@@ -1,8 +1,15 @@
 <template>
-  <div id="app">
-        <headerview :showLeftbtn="false" :showRightbtn="false" title="报 表"></headerview>
+  <div id="app"  v-cloak> 
+        <headerview :showLeftbtn="false" :showRightbtn="false" :title="title"></headerview>
             <van-row  class="body">  
-                 <van-grid square :border="false" :column-num="3">
+              <van-skeleton
+                  title
+                  avatar
+                  :row="3"
+                  :loading="loading"
+            >
+              <!-- <div>实际内容</div> -->
+                <van-grid square :border="false" :column-num="3">
                     <van-grid-item
                         v-for="(item,index) in currentViewMenu"
                         @click="turnToPage(`${item.data.resLink}`)"
@@ -18,6 +25,8 @@
                     </template>
                     </van-grid-item>
                 </van-grid>
+            </van-skeleton>
+               
             </van-row> 
          <footerview></footerview>
   </div>
@@ -31,22 +40,59 @@ export default {
   mixins:[baseMixin],
   data(){
     return {
+        loading:true,
+        title:'报 表',
+        currentFooterSelectedIndex:this.$route.query.keyPathId,
         hasUpdate:false,//是否已經更新字段，
         currentViewMenu:[],
     }
   },
+  watch: {
+         '$route' (to, from) { //监听路由是否变化
+          if(to.query.keyPathId != from.query.keyPathId){
+            this.currentFooterSelectedIndex = to.query.keyPathId;
+            this.initData();//重新加载数据
+          }
+        }
+
+		},
   computed:{
       // menuList () {
       //   let tempMenuList =this.$store.getters.menuList_getters
       //   return tempMenuList
       // }
   },
+  beforeCreate(){
+    // if(this.$config.isRunApp){
+    //     window.api.showProgress({
+    //       title:"数据加载中...",
+    //       text: '请稍等...'
+    //     });
+    // }
+  },
   mounted(){
      this.$nextTick(()=>{
-        this.getCurrentViewMenu()
+      //  if(this.$config.isRunApp){
+      //     window.api.hideProgress()
+      //  }
+         
+         this.initData()
      })
   },
   methods:{
+        initData(){
+           let _self =this
+           // debugger
+          _self.currentFooterSelectedIndex = _self.$route.query.keyPathId
+          let menuParams =_self.$route.query.keyPathId
+          if(_self.$config.isRunApp){
+            menuParams =window.api.pageParam.keyPathId
+            _self.currentFooterSelectedIndex = menuParams
+          }
+          _self.$store.commit('setCurrentSelectdFooterMenu',menuParams)
+          _self.getCurrentViewMenu(menuParams)
+          
+        },
      //獲取通知信息
         getNotice(index,_url){
            //let _url =dataItem.resNotice
@@ -75,7 +121,7 @@ export default {
            // return '1'
         },
        //獲取當前頁面的菜單
-       getCurrentViewMenu(){
+       getCurrentViewMenu(resParent){
            //console.log('reports獲取當前頁面的菜單:'+JSON.stringify(this.menuList))
            let allMenu = this.menuList // this.menuList come from mixins
            //debugger
@@ -84,10 +130,12 @@ export default {
            }
         
           let afterFilterData = allMenu.filter(item=>{
-                  return item.data.resLink=='report' ? true :false
+                  return item.id==resParent ? true :false
               })
-          this.currentViewMenu = afterFilterData[0].children
-          // console.log('this.currentViewMenu :'+ JSON.stringify(this.currentViewMenu))
+         this.title =afterFilterData[0].title
+         this.currentViewMenu = afterFilterData[0].children
+           //console.log('afterFilterData :'+ JSON.stringify(this.afterFilterData))
+         this.loading=false
        }
   }
 }

@@ -4,7 +4,7 @@
          <div class="footerMargin"></div>
         <van-row  class="footer">
             <van-tabbar @change="handleChangeEven" :safe-area-inset-bottom="true" v-model="active">
-             <van-tabbar-item v-for="(item,index) in menuList"  :key="index" @click.native="turnToPage(`${item.data.resLink}`)"  :icon="item.data==null?'':item.data.resIcon">{{item.title}}</van-tabbar-item>
+             <van-tabbar-item v-for="(item,index) in menuList"  :key="index" @click.native="turnToPage(item.data)"  :icon="item.data==null?'':item.data.resIcon"><span v-text="item.title"></span></van-tabbar-item>
             </van-tabbar>
         </van-row>
 
@@ -27,6 +27,11 @@ export default {
         // }
     },
     computed: {
+        currentPath(){
+             let tempCurrentMenuSelected =this.$store.getters.currentSelectedMenu_getter
+             //console.log('footer tempMenuList'+JSON.stringify(tempCurrentMenuSelected))
+             return tempCurrentMenuSelected
+        },
         menuList() {
              let tempMenuList =this.$store.getters.menuList_getters
              //console.log('footer tempMenuList'+JSON.stringify(tempMenuList))
@@ -51,15 +56,23 @@ export default {
 
         }, 
         //跳转到指定页面，默认字符串
-       turnToPage(path){
+       turnToPage(item){
+          
+           //debugger
+           // item = JSON.stringify(item)
+         if(this.currentPath ==item.ID1){
+             return
+         }
          this.active = this.tempActive
           let params ={
-              name:path
+              name:item.resLink,
+              keyPathId:item.ID1,
+            
           }
+        //  this.currentPath = path
+          this.$store.commit('setCurrentSelectdFooterMenu',item.ID1)
           switchMethods.turnToPage(params)
-           if (this.$config.isRunApp) {
-                window.api.closeWin()
-           }
+       
       },
     }
     

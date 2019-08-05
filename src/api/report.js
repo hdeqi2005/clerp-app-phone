@@ -36,7 +36,7 @@ export const getAccRAnalyzer = ({ startDate,endDate,ctCode,token}) => {
   }
 
 /**
-* @description 全厂综合报表 CompFactoryReport
+* @description 全厂综合报表 CompFactoryReport ==>暂时注销使用，需求变更
 * @params { 根据开始日期(startDate)，结束日期(endDate),token来获取全厂综合报表 }
 */
 export const getColligateAnalyzer = ({ startDate,endDate,token}) => {
@@ -54,6 +54,33 @@ export const getColligateAnalyzer = ({ startDate,endDate,token}) => {
     } 
     return axios.request({
       url: `${apiPath}/report/simple/aspSysColligateAnalyzer`,
+      data,
+      method: 'post',
+      transformRequest: [function (data) {
+        // 对 data 进行任意转换处理 将对象 序列化成URL的形式，以&进行拼接。
+        return Qs.stringify(data) 
+  
+      }],
+    })
+  }
+
+  /**
+* @description 全厂综合报表 New  CompFactoryReport 20190802
+* @params {token来获取全厂综合报表 }
+*/
+export const getFactoryKanban = ({token}) => {
+  //debugger
+    //参数
+    let data = {
+      token
+     }
+     
+    if(config.isRunApp){
+      //apiCloud 参数传递封装，其它另行处理，参考：https://docs.apicloud.com/Client-API/api#3  ajax
+      data= {values: data} 
+    } 
+    return axios.request({
+      url: `${apiPath}/report/simple/spGetFactoryKanban`,
       data,
       method: 'post',
       transformRequest: [function (data) {

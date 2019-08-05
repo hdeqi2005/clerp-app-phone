@@ -1,4 +1,4 @@
-import { getToken } from '@/libs/util'
+import { getToken,removeLocalStorage,getLocalStorage } from '@/libs/util'
 // 本段代码为Apicloud Ajax类核心方法ajax的封装,
 // 后续的一些粒子方法如get/post/put/delete等,
 // 都是通过修改ajax方法传入的参数进行封装,
@@ -65,7 +65,7 @@ var options = {
     getInsideConfig () {
       const config = {
         headers: {
-         'token':getToken()
+         'token':getLocalStorage('TOKEN')
         }
       }
       return config

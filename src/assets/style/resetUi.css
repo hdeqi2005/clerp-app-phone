@@ -9,3 +9,4 @@
 .van-info{
     line-height: 15px !important;
 }
+[v-cloak]{ display:none}

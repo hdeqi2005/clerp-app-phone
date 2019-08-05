@@ -23,7 +23,7 @@ class HttpRequest {
     const config = {
       baseURL: this.baseUrl,
       headers: {
-        token:getToken(),
+        token:getLocalStorage('TOKEN'),
         time: Date.now().toString()
       }
     }

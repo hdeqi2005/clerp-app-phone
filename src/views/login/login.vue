@@ -53,6 +53,7 @@ import md5 from 'js-md5';
 import { getToken, setToken,setLocalStorage,getLocalStorage } from '@/libs/util'
 import baseMixin from '@/mixins'
 import {mapActions} from 'vuex'
+import { setTimeout } from 'timers';
 export default {
   name:'login',
   mixins:[baseMixin],
@@ -83,6 +84,7 @@ export default {
         ...mapActions(['getValidatorToken_action','Login_action','getMenuByToken_action']),
         //获取用户随机码
         getUUID(){
+          //debugger
           this.isLoading =true
           this.disabledLoginBtn=true
           let params ={
@@ -90,7 +92,7 @@ export default {
           }
           let _self = this
           this.getValidatorToken_action(params).then(res=>{
-             // console.log('getUUID success:'+res)
+            // debugger
              _self.currentUUId = res.data
              _self.handleLogin()
           }).catch(err=>{
@@ -114,8 +116,9 @@ export default {
            }
            let _self = this
            this.Login_action(params).then(res=>{
-             //debugger
-             let token =res.data.token
+            // debugger
+              let token =res.data.token
+             this.$store.commit('setLoginToken',token)
               _self.getMenuList(token)
            }).catch(err=>{
               _self.$toast('登陆失败:'+err)
@@ -172,8 +175,17 @@ export default {
           if(this.currentMenuList.length>0){
              this.redirectPage = this.currentMenuList[0].data.resLink
              if(this.redirectPage!='' && this.redirectPage!=null){
+                 if(this.$config.isRunApp){
+                    //关闭指定window，若待关闭的window不在最上面，则无动画
+                      setTimeout(() => {
+                          window.api.closeWin({
+                            name: 'login'
+                          })
+                      }, 300);
+                  }
                 this.turnToPage(this.redirectPage)
              }
+           
           }
           
         }

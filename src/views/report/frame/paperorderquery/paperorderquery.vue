@@ -71,7 +71,7 @@ export default {
            endDate:'2019-07-10',
            ctCode:'',
            mode:5 ,//汇总方式:0客户汇总 1 业务员汇总 5日期汇总
-           token:getToken(),
+           token:getLocalStorage('TOKEN'),
            size:20
       },
       dataColumns:[],//动态列原型

@@ -6,7 +6,7 @@ const serverBusyTips="服务繁忙，请稍后再试！"
 
 export default {
     state: {
-      token: getToken()||'',
+      token: getLocalStorage('TOKEN')||'',
       menuList: getLocalStorage('menuList'),
     },
     getters:{
@@ -18,9 +18,11 @@ export default {
       // }
     },
     mutations: {
-        setToken (state, token) {
-        state.token = token
-          setToken(token)
+        setLoginToken (state, token) {
+         // debugger
+           state.token = token
+          // setToken(token)
+          setLocalStorage('TOKEN',token)
         },
         //保存菜單
         setMenuList(state,data){
@@ -62,6 +64,7 @@ export default {
       * @params { username, password }
       */
       Login_action ({commit}, params) {
+       // debugger
         return new Promise((resolve, reject) => {
           try {
             login(params).then(res => {
@@ -69,7 +72,7 @@ export default {
               
               if(data.success)
               {
-                commit('setToken',data.data.token)
+                //commit('setToken',data.data.token)
                 resolve(data)
               }
               else

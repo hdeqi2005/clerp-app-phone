@@ -15,7 +15,9 @@ const apiPath = config.isRunApp ? '/clerp-app-api' : '/api'
  */
 export const getNoticeInfo = ({url}) => {
 	//参数
-	let data = {}
+	let data = {
+		isLoad:'false',
+	}
 
 	if (config.isRunApp) {
 		//apiCloud 参数传递封装，其它另行处理，参考：https://docs.apicloud.com/Client-API/api#3  ajax

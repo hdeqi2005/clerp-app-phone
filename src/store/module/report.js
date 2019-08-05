@@ -1,4 +1,4 @@
-import { getAccRAnalyzer,getColligateAnalyzer,getPaperCOQueryAnaly,getPaperDeliTotal } from '@/api/report'
+import {getFactoryKanban,getAccRAnalyzer,getColligateAnalyzer,getPaperCOQueryAnaly,getPaperDeliTotal } from '@/api/report'
 import config from '@/config'
 import {setLocalStorage,getLocalStorage } from '@/libs/util'
 const serverBusyTips="服务繁忙，请稍后再试！"
@@ -39,8 +39,36 @@ export default {
           }
         })
       },
+      /**
+    * @description New 全厂综合报表 
+    * @params {token来获取全厂综合报表 }
+    */
+      getFactoryKanban_action ({commit}, params) {
+      return new Promise((resolve, reject) => {
+        try {
+          getFactoryKanban(params).then(res => {
+            const data = config.isRunApp ? res : res.data //因为web 浏览器 多封装了一层 data 包裹
+            if(data.success)
+            {
+              resolve(data.data)
+            }
+            else
+            {
+              reject(data.msg)
+            }
+          }).catch(err => {
+            console.error(JSON.stringify(err))
+            reject(serverBusyTips)
+          })
+        } catch (error) {
+          reject(serverBusyTips+error)
+        }
+    
+       
+      })
+    },
     /**
-    * @description 全厂综合报表
+    * @description 全厂综合报表 ==>暂时注销，需求变更 20190802 edit by andy
     * @params { 根据开始日期(startDate)，结束日期(endDate),token来获取全厂综合报表 }
     */
      getColligateAnalyzer_action ({commit}, params) {

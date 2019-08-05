@@ -8,7 +8,7 @@ files.forEach(item => {
   const items = item.split('/')
   console.log('文件路径split by /:'+items)
 
-  let page = items[items.length - 2]
+  let page = (items[items.length - 2]).toLowerCase()
   console.log('文件路径截取 by items.length :'+items.length)
   
   const pageParent = items[items.length - 3]
@@ -18,7 +18,7 @@ files.forEach(item => {
   console.log('-----page Name----------'+page)
   if (pageParent === 'frame') {
     //page = `${page}_frame`
-    page = `${page}`
+    page = `${page.toLowerCase()}`
   }
   pages[page] = item
 })

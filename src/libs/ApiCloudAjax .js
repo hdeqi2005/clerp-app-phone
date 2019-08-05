@@ -1,4 +1,4 @@
-import { getToken } from '@/libs/util'
+import { getToken,removeLocalStorage,getLocalStorage } from '@/libs/util'
 import * as switchMethods  from '@/libs/switchMethods'
 // 本段代码为Apicloud Ajax类核心方法ajax的封装,
 // 后续的一些粒子方法如get/post/put/delete等,
@@ -18,6 +18,7 @@ var options = {
     interceptorResSuc: (res, fn) => {
       //console.warn('响应成功拦截器:'+JSON.stringify(res))
       if(res.data.status===10000){
+           removeLocalStorage('TOKEN')
            window.api.toast({
                 msg: '登陆过期，请重新登陆！',
                 duration: 2000,
@@ -28,6 +29,7 @@ var options = {
                window.api.openWin({
                   name: 'login',
                   url: './login.html',
+                  slidBackEnabled:false,
                   pageParam: {
                       name: 'test'
                   }
@@ -65,10 +67,18 @@ var options = {
     // 请求拦截器
     interceptorReq: (config) => {
        // 加载loading
-       window.api.showProgress({
+       if(config.data.values && (config.data.values.isLoad==null || config.data.values.isLoad=='')){
+        // console.warn('config.data.values.isLoad:'+config.data.values.isLoad)
+        //console.warn('请求拦截器:'+JSON.stringify(config))
+        window.api.showProgress({
         title:"获取数据中...",
         text: '请稍等...'
         });
+     }
+      //  window.api.showProgress({
+      //   title:"获取数据中...",
+      //   text: '请稍等...'
+      //   });
      // console.warn('请求拦截器:'+JSON.stringify(config))
       return config
     },
@@ -96,7 +106,7 @@ var options = {
     getInsideConfig () {
       const config = {
         headers: {
-         'token':getToken()
+         'token': getLocalStorage('TOKEN')
         }
       }
       return config
