@@ -10,3 +10,7 @@
     line-height: 15px !important;
 }
 [v-cloak]{ display:none}
+
+/* .van-grid-item__text{
+    font-weight: bold !important;
+} */

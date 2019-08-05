@@ -340,3 +340,22 @@ export const dataDiff =(interval,date1,date2) =>{
   case "l": return parseInt(long);
   }
 }
+
+/**
+ * @desc tools 描述 数字千分符
+ * 
+ * @params 参数 num 需要格式化的字符串数字
+ * 
+ * @author Andy Huang
+ * 
+ * @created 2019/08/05 10:43:32
+ */
+export const toThousands =(num) =>{
+    num = (num || 0).toString(), result = '';
+  while (num.length > 3) {
+      result = ',' + num.slice(-3) + result;
+      num = num.slice(0, num.length - 3);
+  }
+  if (num) { result = num + result; }
+  return result;
+}
