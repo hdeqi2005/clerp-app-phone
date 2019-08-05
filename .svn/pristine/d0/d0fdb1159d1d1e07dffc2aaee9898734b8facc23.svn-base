@@ -1,0 +1,86 @@
+<template>
+    <div id='appfooter'>
+            <!-- 占位符 -->
+         <div class="footerMargin"></div>
+        <van-row  class="footer">
+            <van-tabbar @change="handleChangeEven" :safe-area-inset-bottom="true" v-model="active">
+             <van-tabbar-item v-for="(item,index) in menuList"  :key="index" @click.native="turnToPage(item.data)"  :icon="item.data==null?'':item.data.resIcon">{{item.title}}</van-tabbar-item>
+            </van-tabbar>
+        </van-row>
+
+    </div>
+</template>
+
+<script>
+import * as switchMethods  from '@/libs/switchMethods'
+export default {
+    name:'footer-view',
+    data(){
+        return{
+            tempActive:0,
+            active:0
+        }
+    },
+    watch:{
+        // active(oldValue,newValue){
+        //    // console.log('active :'+oldValue,newValue)
+        // }
+    },
+    computed: {
+        currentPath(){
+             let tempCurrentMenuSelected =this.$store.getters.currentSelectedMenu_getter
+             //console.log('footer tempMenuList'+JSON.stringify(tempCurrentMenuSelected))
+             return tempCurrentMenuSelected
+        },
+        menuList() {
+             let tempMenuList =this.$store.getters.menuList_getters
+             //console.log('footer tempMenuList'+JSON.stringify(tempMenuList))
+            return tempMenuList
+        },
+         currentMenuIndex(){
+            let tempMenuIndex =this.$store.getters.currentSelectedMenuIndex_getter
+            return tempMenuIndex
+        }
+  },
+   mounted(){
+       this.active = Number(this.currentMenuIndex)
+       //console.log('currentMenuIndex:'+this.currentMenuIndex)
+   },
+    methods:{
+        handleChangeEven(val){
+            //console.log('handleChangeEven :'+val)
+            this.tempActive =val
+            this.$store.commit('setCurrentSelectdMenuIndex',val)
+        },
+        handleActive(){
+
+        }, 
+        //跳转到指定页面，默认字符串
+       turnToPage(item){
+          
+           //debugger
+           // item = JSON.stringify(item)
+         if(this.currentPath ==item.ID1){
+             return
+         }
+         this.active = this.tempActive
+          let params ={
+              name:item.resLink,
+              keyPathId:item.ID1
+          }
+        //  this.currentPath = path
+          this.$store.commit('setCurrentSelectdFooterMenu',item.ID1)
+          switchMethods.turnToPage(params)
+       
+      },
+    }
+    
+}
+</script>
+<style scoped>
+ .footerMargin{
+     /* margin-top:54px; */
+     height: 54px;
+      /* padding-top: 54px; */
+ }
+</style>

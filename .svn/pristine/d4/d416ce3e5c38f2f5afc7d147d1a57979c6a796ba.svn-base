@@ -1,0 +1,293 @@
+<template>
+  <div id="app">
+        <headerview title='全厂综合查询' @onClickRight="onClickRight"></headerview>
+              <div class="MarginTop10"></div>
+               <div id="otherContent">
+                  
+                       <!--过滤按钮 -->
+                     <van-row type="flex" justify="center">
+                        <van-col span="6"><van-button @click="handleFilterData('day')" size="small" :type="currentFilterType=='day'? 'info': 'default'">日</van-button></van-col>
+                        <van-col span="6"><van-button @click="handleFilterData('week')" size="small" :type="currentFilterType=='week'? 'info': 'default'">周</van-button></van-col>
+                        <van-col span="6"><van-button @click="handleFilterData('month')" size="small" :type="currentFilterType=='month'? 'info': 'default'">月</van-button></van-col>
+                      </van-row>
+                  
+                     <van-swipe @change="onChangeSwipe">
+                      <!--订单（面积、金额） 默认 序号：0-->
+                      <van-swipe-item>
+                        <van-row  class="body">
+                                 <compfactoryreportBar currentMode='0' style="height:300px;" :value="barData" text="订单(面积、金额)对照"></compfactoryreportBar>
+                        </van-row>
+                      </van-swipe-item>
+                      <!--生产（面积、金额） 序号：1-->
+                      <van-swipe-item>
+                        <van-row  class="body">
+                                <compfactoryreportBar currentMode='1' style="height:300px;" :value="barData" text="生产(面积、金额)对照"></compfactoryreportBar>
+                        </van-row>
+                      </van-swipe-item>
+                      <!--送货(面积、金额) 序号：2-->
+                      <van-swipe-item>
+                        <van-row  class="body">
+                                <compfactoryreportBar currentMode='2' style="height:300px;" :value="barData" text="送货(面积、金额)对照"></compfactoryreportBar>
+                        </van-row>
+                      </van-swipe-item>
+                       <!--收款（当天、当月）：3-->
+                      <van-swipe-item>
+                        <van-row  class="body">
+                                <compfactoryreportBar currentMode='3' style="height:300px;" :value="barData" text="收款金额对照"></compfactoryreportBar>
+                        </van-row>
+                      </van-swipe-item>
+                    </van-swipe>
+      </div>
+             <van-row  class="body">
+                    <!-- <van-cell :border="false" title="主体内容" >
+                      <template slot="title"> -->
+                           <div class="dataTable">
+                              <v-table
+                              :height="tableHeight"
+                              :title-row-height="24"
+                               title-bg-color="#4ba3fb"
+                              :row-height="20"
+                              id="dt_compfactoryreport"
+                              ref="dt_compfactoryreport"
+                              is-vertical-resize
+                              style="width:100%;"
+                              is-horizontal-resize
+                              :columns="dataColumns"
+                              :table-data="dataSource"
+                              :show-vertical-border="true"
+                               :error-content="errorContent"
+                              even-bg-color="#f4f4f4"
+                              row-hover-color="#eee"
+                              row-click-color="#edf7ff">
+                              </v-table>
+                          </div>
+                      <!-- </template>
+                    </van-cell> -->
+                    <van-popup  position="bottom"
+                      :style="{ height: 'auto' }" v-model="showSearchForm">
+                      <searchForm @handleSearch="handleSearch" :IsShowCustomerList="false" :IsShowMethodOfSumList="false"></searchForm>
+                  </van-popup>
+            </van-row>
+         <!-- <footerview></footerview> -->
+  </div>
+</template>
+<script>
+/**
+ * @description 全厂综合报表 CompFactoryReport
+ */
+import moment from 'moment'; 
+import {compfactoryreportBar} from '_c/charts/compfactoryreport'
+import searchForm from '_c/searchForm'
+import { getToken, setToken,setLocalStorage,getLocalStorage } from '@/libs/util'
+import baseMixin from '@/mixins'
+import {mapActions} from 'vuex'
+export default {
+  name:'CompFactoryReport',
+  components:{searchForm,compfactoryreportBar},
+  mixins:[baseMixin],
+   data(){
+    return {
+      dataWindowH: window.innerHeight || document.body.clientHeight,
+      tableHeight: window.innerHeight || document.body.clientHeight,
+      currentFilterType:'month',
+      barData:[],//图表数据
+      errorContent:'数据加载中...',
+      showSearchForm:false,
+      dataSource:[], //数据源
+      searchParams:{
+            startDate:'2018-07-10',
+            endDate:'2019-07-10',
+            token:getLocalStorage('TOKEN')
+      },
+      dataColumns: [],
+      //订单 （面积、金额）==数据列描述，格式化
+      dataColumnsM0: [
+                      {field: 'cab_date', title:'日期', width: 136, titleAlign: 'center',columnAlign:'center',isResize:true,
+                      formatter: (rowData, index)=>{
+                              let newFormataDate=this.formatDataByTime(rowData.cab_date)
+                              return `<span>${newFormataDate}</span>`
+                      },},
+                       {field: 'cab_week', title:'星期', width: 136, titleAlign: 'center',columnAlign:'center',isResize:true,
+                      formatter: (rowData, index)=>{
+                              return `<span>${rowData.cab_week}</span>`
+                      },},
+                      {field: 'cac_BoxCOamt', title:'金额', width: 136, titleAlign: 'center',columnAlign:'center',isResize:true,
+                      formatter: (rowData, index)=>{
+                              return `<span>${rowData.cac_BoxCOamt}</span>`
+                      },},
+                      {field: 'cac_BoxCOArea', title:'面积', width: 136, titleAlign: 'center',columnAlign:'center',isResize:true,
+                      formatter: (rowData, index)=>{
+                              return `<span>${rowData.cac_BoxInamt}</span>`
+                      },},
+                    ],
+           //生产（面积、金额） ==数据列描述，格式化
+      dataColumnsM1: [
+                      {field: 'cab_date', title:'日期', width: 136, titleAlign: 'center',columnAlign:'center',isResize:true,
+                      formatter: (rowData, index)=>{
+                              let newFormataDate=this.formatDataByTime(rowData.cab_date)
+                              return `<span>${newFormataDate}</span>`
+                      },},
+                       {field: 'cab_week', title:'星期', width: 136, titleAlign: 'center',columnAlign:'center',isResize:true,
+                      formatter: (rowData, index)=>{
+                              return `<span>${rowData.cab_week}</span>`
+                      },},
+                      {field: 'cac_BoxInamt', title:'金额', width: 136, titleAlign: 'center',columnAlign:'center',isResize:true,
+                      formatter: (rowData, index)=>{
+                              return `<span>${rowData.cac_BoxCOamt}</span>`
+                      },},
+                      {field: 'cac_BoxInArea', title:'面积', width: 136, titleAlign: 'center',columnAlign:'center',isResize:true,
+                      formatter: (rowData, index)=>{
+                              return `<span>${rowData.cac_BoxInamt}</span>`
+                      },},
+                    ],
+           //送货（面积、金额） ==数据列描述，格式化
+      dataColumnsM2: [
+                      {field: 'cab_date', title:'日期', width: 136, titleAlign: 'center',columnAlign:'center',isResize:true,
+                      formatter: (rowData, index)=>{
+                              let newFormataDate=this.formatDataByTime(rowData.cab_date)
+                              return `<span>${newFormataDate}</span>`
+                      },},
+                       {field: 'cab_week', title:'星期', width: 136, titleAlign: 'center',columnAlign:'center',isResize:true,
+                      formatter: (rowData, index)=>{
+                              return `<span>${rowData.cab_week}</span>`
+                      },},
+                      {field: 'cac_BoxOutamt', title:'金额', width: 136, titleAlign: 'center',columnAlign:'center',isResize:true,
+                      formatter: (rowData, index)=>{
+                              return `<span>${rowData.cac_BoxCOamt}</span>`
+                      },},
+                      {field: 'cac_BoxOutArea', title:'面积', width: 136, titleAlign: 'center',columnAlign:'center',isResize:true,
+                      formatter: (rowData, index)=>{
+                              return `<span>${rowData.cac_BoxInamt}</span>`
+                      },},
+                    ],
+               //收款（当天、当月） ==数据列描述，格式化
+      dataColumnsM3: [
+                      {field: 'cab_date', title:'日期', width: 136, titleAlign: 'center',columnAlign:'center',isResize:true,
+                      formatter: (rowData, index)=>{
+                              let newFormataDate=this.formatDataByTime(rowData.cab_date)
+                              return `<span>${newFormataDate}</span>`
+                      },},
+                       {field: 'cab_week', title:'星期', width: 136, titleAlign: 'center',columnAlign:'center',isResize:true,
+                      formatter: (rowData, index)=>{
+                              return `<span>${rowData.cab_week}</span>`
+                      },},
+                      {field: 'cac_Gatamt', title:'金额', width: 136, titleAlign: 'center',columnAlign:'center',isResize:true,
+                      formatter: (rowData, index)=>{
+                              return `<span>${rowData.cac_BoxCOamt}</span>`
+                      },},
+                    ]
+    }
+  },
+  computed:{
+   },
+   mounted(){
+     let _self =this
+     this.$nextTick(()=>{
+            _self.tableHeight =_self.getLeftHeight()-10  //减去额外的margin-top
+            //console.log('_self.tableHeight:'+_self.tableHeight)
+     })
+   },
+  created(){
+     this.searchParams.startDate =moment().add(0, 'month').format('YYYY-MM') + '-01'
+     this.searchParams.endDate =moment().format('YYYY-MM-DD')
+     this.dataColumns = this.dataColumnsM0
+    //实例已经在内存中创建OK，此时 data 和 methods 已经创建OK，此时还没有开始 编译模板
+    this.getDataSource()
+  },
+  methods:{
+    //切换图层事件
+    onChangeSwipe(value){
+           //图层显示方式:0=订单（面积、金额）， 1=生产（面积、金额），2=送货(面积、金额)，3=收款（当天、当月）
+          let currentMode =Number(value)
+            switch(currentMode){
+               case 0:
+                this.dataColumns = this.dataColumnsM0
+               break;
+              case 1:
+                 this.dataColumns = this.dataColumnsM1
+               break;
+              case 2:
+                this.dataColumns = this.dataColumnsM2
+               break;
+              case 3:
+                this.dataColumns = this.dataColumnsM3
+               break;
+          }
+          //this.getDataSource()
+    },
+    //格式化数据日期
+    formatDataByTime(val){
+      return moment(val).format('YYYY-MM-DD')
+    },
+    ...mapActions(['getColligateAnalyzer_action']),
+    //获取全厂综合报表数据
+    getDataSource(){
+       //根据开始日期(startDate)，结束日期(endDate),token来获取全厂综合报表
+        let params= this.searchParams
+        let _self =this
+        //debugger
+        this.getColligateAnalyzer_action(params).then(res=>{
+          //debugger
+          _self.dataSource =res
+          _self.barData =res
+           if(_self.dataSource.length==0){
+               _self.errorContent='暂无数据'
+            }
+        }).catch(err=>{
+          _self.errorContent='暂无数据'
+          _self.$toast('获取数据失败:'+err)
+        })
+    },
+    //过滤数据BY 日 周 月
+    handleFilterData(type){
+        this.currentFilterType = type
+       // debugger
+        switch(type){
+          case 'day':
+            this.searchParams.startDate =moment().format('YYYY-MM-DD')
+            this.searchParams.endDate =moment().format('YYYY-MM-DD')
+            break
+          case 'week':
+            this.searchParams.startDate =moment().day(0).format('YYYY-MM-DD')
+            this.searchParams.endDate =moment().format('YYYY-MM-DD')
+             break
+          case 'month':
+            this.searchParams.startDate =moment().add(0,'month').format('YYYY-MM') + '-01'
+            this.searchParams.endDate =moment().format('YYYY-MM-DD')
+            break 
+        }
+       this.getDataSource() 
+    },
+     //显示查询条件框
+    onClickRight(){
+      this.showSearchForm=true
+    },
+    //查询参数回调处理
+    handleSearch(params){
+      this.currentFilterType =''
+    if(params && params.startDate!=null){
+          this.searchParams =Object.assign(this.searchParams,params)  
+          this.getDataSource()
+          this.showSearchForm=false
+      }
+    }
+  }
+}
+</script>
+
+<style lang="less">
+ .MarginTop10{
+              margin-top:10px;
+  }
+#app {
+   font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  // text-align: center;
+  // color: #2c3e50;
+}
+.table-title {
+    color: white;
+    // font-weight: bold;
+ }
+</style>

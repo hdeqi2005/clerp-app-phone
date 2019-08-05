@@ -1,0 +1,141 @@
+<template>
+  <div id="app">
+        <headerview :showLeftbtn="false" :showRightbtn="false" :title="title"></headerview>
+            <van-row  class="body">  
+                 <van-grid square :border="false" :column-num="3">
+                    <van-grid-item
+                        v-for="(item,index) in currentViewMenu"
+                        @click="turnToPage(`${item.data.resLink}`)"
+                        :key="index"
+                        :text="item.title"
+                    >
+                    <template slot="icon" >
+                        <div>
+                        <van-icon size="40" color="#3296fa" :name="item.data.resIcon" >
+                          <div class="van-info">{{item.noticeCount}}{{getNotice(index,item.data.resNotice)}}</div>
+                        </van-icon>
+                        </div>
+                    </template>
+                    </van-grid-item>
+                </van-grid>
+            </van-row> 
+         <footerview></footerview>
+  </div>
+</template>
+<script>
+import { getToken, setToken,setLocalStorage,getLocalStorage } from '@/libs/util'
+import baseMixin from '@/mixins'
+import {mapActions} from 'vuex'
+export default {
+  name:'reportView',
+  mixins:[baseMixin],
+  data(){
+    return {
+        title:'报 表',
+        currentFooterSelectedIndex:this.$route.query.keyPathId,
+        hasUpdate:false,//是否已經更新字段，
+        currentViewMenu:[],
+    }
+  },
+  watch: {
+         '$route' (to, from) { //监听路由是否变化
+          if(to.query.keyPathId != from.query.keyPathId){
+            this.currentFooterSelectedIndex = to.query.keyPathId;
+            this.initData();//重新加载数据
+          }
+        }
+
+		},
+  computed:{
+      // menuList () {
+      //   let tempMenuList =this.$store.getters.menuList_getters
+      //   return tempMenuList
+      // }
+  },
+  beforeCreate(){
+    // if(this.$config.isRunApp){
+    //     window.api.showProgress({
+    //       title:"数据加载中...",
+    //       text: '请稍等...'
+    //     });
+    // }
+  },
+  mounted(){
+     this.$nextTick(()=>{
+      //  if(this.$config.isRunApp){
+      //     window.api.hideProgress()
+      //  }
+         
+         this.initData()
+     })
+  },
+  methods:{
+        initData(){
+           let _self =this
+           // debugger
+          _self.currentFooterSelectedIndex = _self.$route.query.keyPathId
+          let menuParams =_self.$route.query.keyPathId
+          if(_self.$config.isRunApp){
+            menuParams =window.api.pageParam.keyPathId
+            _self.currentFooterSelectedIndex = menuParams
+          }
+          _self.$store.commit('setCurrentSelectdFooterMenu',menuParams)
+          _self.getCurrentViewMenu(menuParams)
+        },
+     //獲取通知信息
+        getNotice(index,_url){
+           //let _url =dataItem.resNotice
+            if(_url.length<10 || this.hasUpdate){
+               return
+            }
+           // console.log('獲取通知信息'+_url)
+            let params ={
+                url:_url
+            }
+            let _self=this
+            this.$store.dispatch('getNoticeInfoAction',params).then(res=>{
+                  _self.hasUpdate =true //已經更新
+                  if(Number(res.data)>0){
+                     let updateParams ={
+                         noticeCount:res.data
+                     }
+                 _self.currentViewMenu[index] = Object.assign({}, _self.currentViewMenu[index], updateParams)
+                 _self.currentViewMenu= _self.currentViewMenu.sort() //觸發更新
+               
+                  }
+            }).catch(err=>{
+                 _self.hasUpdate =true
+                 _self.$toast('获取NoticeInfo失败:'+err)
+            })
+           // return '1'
+        },
+       //獲取當前頁面的菜單
+       getCurrentViewMenu(resParent){
+           //console.log('reports獲取當前頁面的菜單:'+JSON.stringify(this.menuList))
+           let allMenu = this.menuList // this.menuList come from mixins
+           //debugger
+           if(allMenu==null || allMenu.length==0 || allMenu.constructor != Array){
+              return
+           }
+        
+          let afterFilterData = allMenu.filter(item=>{
+                  return item.id==resParent ? true :false
+              })
+         this.title =afterFilterData[0].title
+         this.currentViewMenu = afterFilterData[0].children
+           //console.log('afterFilterData :'+ JSON.stringify(this.afterFilterData))
+       }
+  }
+}
+</script>
+
+<style lang="less">
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  // text-align: center;
+  // color: #2c3e50;
+}
+
+</style>

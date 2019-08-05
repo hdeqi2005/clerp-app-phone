@@ -1,0 +1,111 @@
+<template>
+  <div id="app">
+        <headerview :showLeftbtn="false" :showRightbtn="false" title="报 表"></headerview>
+            <van-row  class="body">  
+                 <van-grid square :border="false" :column-num="3">
+                    <van-grid-item
+                        v-for="(item,index) in currentViewMenu"
+                        @click="turnToPage(`${item.data.resLink}`)"
+                        :key="index"
+                        :text="item.title"
+                    >
+                    <template slot="icon" >
+                        <div>
+                        <van-icon size="40" color="#3296fa" :name="item.data.resIcon" >
+                          <div class="van-info">{{item.noticeCount}}{{getNotice(index,item.data.resNotice)}}</div>
+                        </van-icon>
+                        </div>
+                    </template>
+                    </van-grid-item>
+                </van-grid>
+            </van-row> 
+         <footerview></footerview>
+  </div>
+</template>
+<script>
+import { getToken, setToken,setLocalStorage,getLocalStorage } from '@/libs/util'
+import baseMixin from '@/mixins'
+import {mapActions} from 'vuex'
+export default {
+  name:'reportView',
+  mixins:[baseMixin],
+  data(){
+    return {
+        hasUpdate:false,//是否已經更新字段，
+        currentViewMenu:[],
+    }
+  },
+  computed:{
+      // menuList () {
+      //   let tempMenuList =this.$store.getters.menuList_getters
+      //   return tempMenuList
+      // }
+  },
+  mounted(){
+     this.$nextTick(()=>{
+      // debugger
+        let menuParams =this.$route.query.keyPath
+        if(this.$config.isRunApp){
+          menuParams =window.api.pageParam.keyPath
+        }
+        this.$store.commit('setCurrentSelectdFooterMenu',menuParams)
+        this.getCurrentViewMenu(menuParams)
+     })
+  },
+  methods:{
+     //獲取通知信息
+        getNotice(index,_url){
+           //let _url =dataItem.resNotice
+            if(_url.length<10 || this.hasUpdate){
+               return
+            }
+           // console.log('獲取通知信息'+_url)
+            let params ={
+                url:_url
+            }
+            let _self=this
+            this.$store.dispatch('getNoticeInfoAction',params).then(res=>{
+                  _self.hasUpdate =true //已經更新
+                  if(Number(res.data)>0){
+                     let updateParams ={
+                         noticeCount:res.data
+                     }
+                 _self.currentViewMenu[index] = Object.assign({}, _self.currentViewMenu[index], updateParams)
+                 _self.currentViewMenu= _self.currentViewMenu.sort() //觸發更新
+               
+                  }
+            }).catch(err=>{
+                 _self.hasUpdate =true
+                 _self.$toast('获取NoticeInfo失败:'+err)
+            })
+           // return '1'
+        },
+       //獲取當前頁面的菜單
+       getCurrentViewMenu(resLinkPath){
+           //console.log('reports獲取當前頁面的菜單:'+JSON.stringify(this.menuList))
+           let allMenu = this.menuList // this.menuList come from mixins
+           //debugger
+           if(allMenu==null || allMenu.length==0 || allMenu.constructor != Array){
+              return
+           }
+        
+          let afterFilterData = allMenu.filter(item=>{
+                  return item.data.resLink.toLowerCase()==resLinkPath.toLowerCase() ? true :false
+              })
+          this.currentViewMenu = afterFilterData[0].children
+          // console.log('this.currentViewMenu :'+ JSON.stringify(this.currentViewMenu))
+       }
+  }
+}
+</script>
+
+<style lang="less">
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  // text-align: center;
+  // color: #2c3e50;
+}
+
+</style>

@@ -1,0 +1,189 @@
+<template>
+  <div id="app">
+      <headerview :showLeftbtn="false" :showRightbtn="false" title="登陆"></headerview>
+          
+            <van-row  class="body">
+                    <van-cell :border="false" title="登陆" >
+                        <template slot="title">
+                              <van-cell-group>
+                                  <van-field
+                                    v-model="loginForm.username"
+                                    required
+                                    clearable
+                                    label="用户名"
+                                    right-icon="question-o"
+                                    placeholder="请输入用户名"
+                                    @click-right-icon="$toast('请输入用户名')"
+                                  >
+                                  <template slot="left-icon">
+                                    <van-icon color="#3296fa" name="contact" />
+                                  </template>
+                                  </van-field>
+
+                                  <van-field
+                                    v-model="loginForm.password"
+                                    type="password"
+                                    label="密码"
+                                    placeholder="请输入密码"
+                                    right-icon="question-o"
+                                    @click-right-icon="$toast('请输入密码')"
+                                    required
+                                  >
+                                  <template slot="left-icon">
+                                    <van-icon color="#3296fa" name="lock" />
+                                  </template>
+                                  </van-field>
+                                </van-cell-group>
+                        </template>
+                    </van-cell>
+                   
+                    <van-cell :center="true"  :border="false" title="确认" >
+                        <template slot="title">
+                          <van-button @click="getUUID()" loading-text='提交中...' :loading="isLoading" :disabled="disabledLoginBtn" size="large" hairline round type="info">登  陆</van-button>
+                        </template>
+                   </van-cell>
+            </van-row>
+         <!-- <footerview></footerview> -->
+  </div>
+</template>
+
+<script>
+//E4E4E4
+import md5 from 'js-md5';
+import { getToken, setToken,setLocalStorage,getLocalStorage } from '@/libs/util'
+import baseMixin from '@/mixins'
+import {mapActions} from 'vuex'
+export default {
+  name:'login',
+  mixins:[baseMixin],
+  data(){
+    return {
+      isLoading:false,
+      disabledLoginBtn:false,
+      loginForm:{
+          username:'admin',
+          password:'123456'
+      },
+      currentUUId:'',
+      currentMenuList:[],
+      redirectPage:'index'//登陸成功后跳轉頁面
+    }
+  },
+  computed:{
+  
+  },
+  components: {
+
+  },
+  mounted(){
+   //this.getUUID()
+  },
+  methods:{
+        //导入合并方法，然后可以直接使用，和methods中方法类似，但参数需要查看原始定义方法 = this.$store.dispatch('handleLogin',params)
+        ...mapActions(['getValidatorToken_action','Login_action','getMenuByToken_action']),
+        //获取用户随机码
+        getUUID(){
+          //debugger
+          this.isLoading =true
+          this.disabledLoginBtn=true
+          let params ={
+            userId:this.loginForm.username
+          }
+          let _self = this
+          this.getValidatorToken_action(params).then(res=>{
+            // debugger
+             _self.currentUUId = res.data
+             _self.handleLogin()
+          }).catch(err=>{
+             // console.error('getUUID err:'+err)
+              _self.$toast('获取Validator Token失败:'+err)
+              this.disabledLoginBtn=false
+              this.isLoading =false
+          })
+        },
+        //user login
+        handleLogin(){
+           this.$store.commit('setCurrentSelectdMenuIndex',0)
+          if(this.loginForm.username!='' && this.loginForm.password!='')
+          {
+            //加密规则为md5(md5（用户密码+UUID）+UUID)
+            //debugger
+           let md5Pwd = md5(md5(this.loginForm.password+this.currentUUId)+this.currentUUId)
+           let params={
+             userId:this.loginForm.username,
+             pwd:md5Pwd
+           }
+           let _self = this
+           this.Login_action(params).then(res=>{
+            // debugger
+              let token =res.data.token
+             this.$store.commit('setLoginToken',token)
+              _self.getMenuList(token)
+           }).catch(err=>{
+              _self.$toast('登陆失败:'+err)
+              this.disabledLoginBtn=false
+               this.isLoading =false
+           })
+          }else{
+             _self.$toast('用户名和密码必填')
+             this.disabledLoginBtn=false
+              this.isLoading =false
+          }
+        },
+        //查询获取菜单BY TOKEN
+        getMenuList(currentToken){
+            let params={
+               token:currentToken
+            }
+            let _self =this 
+            this.getMenuByToken_action(params).then(res=>{
+                 //debugger
+                 let tempMenu = _self.addNoticeInfoIntoArray(res)
+                _self.currentMenuList =tempMenu
+                _self.getMenuListFirst()
+                this.disabledLoginBtn=false
+                this.isLoading =false
+            }).catch(err=>{
+                this.disabledLoginBtn=false
+                this.isLoading =false
+                _self.$toast('获取菜单失败:'+err)
+            })
+        },
+        //動態添加新字段-通知信息個數
+        addNoticeInfoIntoArray(retData){
+            let newDataList =[]
+            
+              if(retData.length>0){
+                  newDataList = retData.map((item, index, arr) => {
+                   if(item.children.length>0){
+                         let newSubDataList = item.children.map((_item,_index,_arr)=>{
+                               _arr[_index].noticeCount =''
+                               return _arr[_index];
+                         })
+                      arr[index].noticeCount =''
+                      return arr[index];
+                   }
+                })
+              }
+              return newDataList
+         // this.retData[this.currentTipIndex] = Object.assign({}, this.tableData[this.currentTipIndex], newParams)
+        },
+        //獲取菜單第一條數據作爲跳轉頁面
+         getMenuListFirst(){
+          // debugger
+          if(this.currentMenuList.length>0){
+             this.redirectPage = this.currentMenuList[0].data.resLink
+             if(this.redirectPage!='' && this.redirectPage!=null){
+                this.turnToPage(this.redirectPage)
+             }
+          }
+          
+        }
+    
+    },
+}
+</script>
+
+<style>
+
+</style>
