@@ -1,0 +1,16 @@
+.van-button--info {
+    color: #fff;
+    background-color: #3296fa;
+    border: 1px solid #3296fa;
+}
+.MarginTop10{
+    margin-top:10px;
+}
+.van-info{
+    line-height: 15px !important;
+}
+[v-cloak]{ display:none}
+
+.table-title {
+    color: white;
+ }

@@ -1,7 +1,6 @@
 <template>
     <div class="container">
-          
-           <van-row id="searchFormDiv" class="body">
+           <van-row  class="body">
                     <van-cell :border="false" title="查询" >
                         <template slot="title">
                               <van-cell-group>
@@ -10,10 +9,9 @@
                                     required
                                     clearable
                                     label="起始日期"
-                                    :disabled="true"
                                     @focus="handlefocus('start')"
                                     placeholder="请输入起始日期"
-                                    @click-right-icon="handlefocus('start')"
+                                    @click-right-icon="$toast('请输入起始日期')"
                                   >
                                     <template slot="right-icon">
                                       <van-icon color="#3296fa" name="calender-o" />
@@ -22,12 +20,11 @@
 
                                   <van-field
                                     v-model="searchForm.endDate"
-                                     :disabled="true"
                                      @focus="handlefocus('end')"
                                     label="结束日期"
                                     placeholder="请输入结束日期"
                                     required
-                                   @click-right-icon="handlefocus('end')"
+                                   @click-right-icon="$toast('请输入结束日期')"
                                   >
                                   <template slot="right-icon">
                                     <van-icon color="#3296fa" name="calender-o" />
@@ -41,7 +38,6 @@
                                 v-show="IsShowCustomerList"
                                id="customerDropdown"
                                 v-model="currentCustomerText"
-                                maxlength="20"
                                 center
                                 clearable
                                 label="客户"
@@ -107,10 +103,10 @@
                         </template>
                     </van-cell>
                     <!-- padding: '30px 50px' -->
-                   <van-popup 
+                   <van-popup
                     v-model="showGetContainer"
                     get-container="body"
-                    :style="{ width:'100%','z-index':'9999'}" 
+                    :style="{ width:'90%' }" 
                   >
                     <van-datetime-picker
                       v-model="currentDate"
@@ -122,7 +118,6 @@
                       @cancel="handleCancel"
                     />
                   </van-popup>
-                 
                   <van-popup   get-container="body" v-model="popupShow" position="left" :style="{ height: '100%',width:'100%'}">
                     <indexBarSelect @closePopup="closePopup"  @handleSelectedEven="handleSelectedEven" :dataSource="customerList"></indexBarSelect>
                   </van-popup>
@@ -354,8 +349,5 @@ export default {
 .van-dropdown-menu{
   height: 20px;
  
-}
-#searchFormDiv .van-field__control{
-  color: #323233 !important;
 }
 </style>

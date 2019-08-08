@@ -1,0 +1,102 @@
+<template>
+    <div>
+        <headerview :showLeftbtn="false" :showRightbtn="false" :title="title"></headerview>
+            <van-row  class="body">
+                <van-grid square :border="false" :column-num="3">
+                    <van-grid-item
+                        v-for="(item,index) in currentMenuList"
+                        @click="turnToPage(`${item.data.resLink}`)"
+                        :key="index"
+                        :text="item.title"
+                    >
+                    <template slot="icon" >
+                        <div>
+                        <van-icon size="40" color="#3296fa" :name="item.data.resIcon" >
+                             <div class="van-info">{{item.noticeCount}}{{getNotice(index,item.data.resNotice)}}</div>
+                        </van-icon>
+                        </div>
+                    </template>
+                    </van-grid-item>
+                </van-grid>
+            
+            </van-row>
+         <footerview></footerview>
+    </div>
+</template>
+<script>
+import baseMixin from '@/mixins'
+import {mapActions} from 'vuex'
+import { getToken, setToken,setLocalStorage,getLocalStorage } from '@/libs/util'
+export default {
+    name:'main-view',
+    mixins:[baseMixin],
+    data(){
+        return{
+            title:'晨龙ERP',
+            hasUpdate:false,//是否已經更新字段，
+            currentToken:'',//当前用户TOKEN,登陆成功后获取
+            currentMenuList:[] //当前用户菜单，通过token查询获取
+        }
+    },
+    created(){
+         //console.log('main.index====')
+         this.$store.commit('setCurrentSelectdMenuIndex',0) //重置底部选择
+    },
+    mounted(){
+        this.$nextTick(()=>{
+          
+           this.getCurrentViewMenu()
+        })
+      
+    },
+    methods:{
+        //獲取通知信息
+        getNotice(index,_url){
+           //let _url =dataItem.resNotice
+            if(_url.length<10 || this.hasUpdate){
+               return
+            }
+           // console.log('獲取通知信息'+_url)
+            let params ={
+                url:_url
+            }
+            let _self=this
+            this.$store.dispatch('getNoticeInfoAction',params).then(res=>{
+                //debugger
+                  _self.hasUpdate =true //已經更新
+                  if(Number(res.data)>0){
+                        // console.log('獲取通知返回信息'+JSON.stringify(res))
+                     let updateParams ={
+                         noticeCount:res.data
+                     }
+               
+                 _self.currentMenuList[index] = Object.assign({}, _self.currentMenuList[index], updateParams)
+                _self.currentMenuList= _self.currentMenuList.sort() //觸發更新
+
+                 //_self.$set(_self.currentMenuList[index], `noticeCount`, res.data)
+                  }
+            }).catch(err=>{
+                 _self.hasUpdate =true
+                 _self.$toast('获取NoticeInfo失败:'+err)
+            })
+           // return '1'
+        },
+         //獲取當前頁面的菜單
+        getCurrentViewMenu(){
+            //debugger
+            let allMenu = this.menuList // this.menuList come from mixins
+            //let getTypeof = typeof(allMenu) null,array,object返回的都是‘object’
+            if(allMenu==null || allMenu.length==0 || allMenu.constructor != Array){
+              return
+            }
+            let afterFilterData = allMenu.filter(item=>{
+                    return item.data.resLink=='index' ? true :false
+                })
+            this.title =afterFilterData[0].title
+            this.currentMenuList = afterFilterData[0].children
+           //  console.log('this.currentViewMenu :'+ JSON.stringify(this.currentViewMenu))
+        },
+
+    }
+}
+</script>
