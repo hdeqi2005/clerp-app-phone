@@ -50,7 +50,7 @@
 							<van-button size="small" type="primary" @click="findGoods()">查询</van-button>
 						</scannerField>
 					</van-cell-group>
-					<v-table :title-row-height="24" :row-height="20" title-bg-color="#3296fae0" id="dt_deliveryquery" ref="dt_deliveryquery"
+					<v-table :title-row-height="20" :row-height="20" title-bg-color="#3296fae0" id="dt_deliveryquery" ref="dt_deliveryquery"
 					 is-vertical-resize style="width:100%;" is-horizontal-resize :columns="findGoodsColumns" :table-data="findGoodsTableDataItems"
 					 :show-vertical-border="true" even-bg-color="#f4f4f4" row-hover-color="#eee" row-click-color="#edf7ff">
 					</v-table>
@@ -64,7 +64,7 @@
 							<van-button size="small" type="primary" @click="paperOut()">查询</van-button>
 						</scannerField>
 					</van-cell-group>
-					<v-table :title-row-height="24" :row-height="20" title-bg-color="#3296fae0" id="dt_deliveryquery" ref="dt_deliveryquery"
+					<v-table :title-row-height="20" :row-height="20" title-bg-color="#3296fae0" id="dt_deliveryquery" ref="dt_deliveryquery"
 					 is-vertical-resize style="width:100%;" is-horizontal-resize :columns="findGoodsColumns" :table-data="paperOutTableDataItems"
 					 :show-vertical-border="true" even-bg-color="#f4f4f4" row-hover-color="#eee" row-click-color="#edf7ff">
 					</v-table>
@@ -254,7 +254,7 @@
 </script>
 
 <style lang="less">
-	// .van-field__label {
-	// 	width: 13vw;
-	// }
+	.van-field__label {
+		width: 13vw;
+	}
 </style>

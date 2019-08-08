@@ -175,7 +175,7 @@
 							<van-button slot="button" type="primary" size="small" @click="paperStoreSearch">查询</van-button>
 						</van-field>
 						
-						<v-table :title-row-height="24" :row-height="20" title-bg-color="#3296fae0" id="dt_deliveryquery" ref="dt_deliveryquery"
+						<v-table :title-row-height="20" :row-height="20" title-bg-color="#3296fae0" id="dt_deliveryquery" ref="dt_deliveryquery"
 						 is-vertical-resize style="width:100%;" is-horizontal-resize :columns="paperStoreColumns" :table-data="paperStoreTableData"
 						 :show-vertical-border="true" even-bg-color="#f4f4f4" row-hover-color="#eee" row-click-color="#edf7ff">
 						</v-table>
@@ -494,11 +494,11 @@
 </script>
 
 <style lang="less">
-	// .van-field__label {
-	// 	width: 13vw;
-	// }
-	// .van-button--small {
-	// 	height: 6vw;
-	// 	line-height: 6.467vw;
-	// }
+	.van-field__label {
+		width: 13vw;
+	}
+	.van-button--small {
+		height: 6vw;
+		line-height: 6.467vw;
+	}
 </style>

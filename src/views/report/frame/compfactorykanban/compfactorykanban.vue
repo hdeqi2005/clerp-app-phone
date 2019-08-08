@@ -107,7 +107,7 @@
                         <van-cell title="本月订单" class="innerReport" @click="handleLink('order',totalReport[0])" :border="false">
                           <template slot="right-icon">
                             <div>
-                              <van-icon size="22" color="#3296fa" name="share"/>
+                              <van-icon size="22" color="#3296fa" name="arrow"/>
                             </div>
                           </template>
                       <template slot="label">
@@ -181,7 +181,7 @@
                         <van-cell title="本月生产" class="innerReport" @click="handleLink('production',totalReport[1])" :border="false">
                           <template slot="right-icon">
                             <div>
-                              <van-icon size="22" color="#3296fa" name="share"/>
+                              <van-icon size="22" color="#3296fa" name="arrow"/>
                             </div>
                           </template>
                       <template slot="label">
@@ -254,7 +254,7 @@
                         <van-cell title="本月送货" class="innerReport" @click="handleLink('delivery',totalReport[2])" :border="false">
                           <template slot="right-icon">
                             <div>
-                              <van-icon size="22" color="#3296fa" name="share"/>
+                              <van-icon size="22" color="#3296fa" name="arrow"/>
                             </div>
                           </template>
                       <template slot="label">
@@ -327,7 +327,7 @@
                         <van-cell title="本月原纸" @click="handleLink('basePaper',totalReport[3])" class="innerReport" :border="false">
                           <template slot="right-icon">
                             <div>
-                              <van-icon size="22" color="#3296fa" name="share"/>
+                              <van-icon size="22" color="#3296fa" name="arrow"/>
                             </div>
                           </template>
                       <template slot="label">
@@ -409,7 +409,7 @@
                         <van-cell title="本月辅料" @click="handleLink('subMaterial',totalReport[4])" class="innerReport" :border="false">
                           <template slot="right-icon">
                             <div>
-                              <van-icon size="22" color="#3296fa" name="share"/>
+                              <van-icon size="22" color="#3296fa" name="arrow"/>
                             </div>
                           </template>
                       <template slot="label">
@@ -465,7 +465,7 @@
                         <van-cell title="本月收支"  @click="handleLink('inoutCome',totalReport[5])" class="innerReport" :border="false">
                           <template slot="right-icon">
                             <div>
-                              <van-icon size="22" color="#3296fa" name="share"/>
+                              <van-icon size="22" color="#3296fa" name="arrow"/>
                             </div>
                           </template>
                       <template slot="label">
@@ -524,7 +524,7 @@
                         <van-cell title="本月运输" @click="handleLink('transportation',totalReport[6])" class="innerReport" :border="false">
                           <template slot="right-icon">
                             <div>
-                              <van-icon size="22" color="#3296fa" name="share"/>
+                              <van-icon size="22" color="#3296fa" name="arrow"/>
                             </div>
                           </template>
                       <template slot="label">
@@ -565,6 +565,7 @@
         <!-- 报表-柱图 -->
         <van-popup v-model="popupShow" position="left" :style="{ height: '100%',width:'100%'}">
 		   	<headerview :title='currentTitlefReport' :showRightbtn="false" :click-left="()=>{popupShow=false}"></headerview>
+           <div class="MarginTop20"></div>
           <van-row  class="body">
                 <orderBar :currentMode='currentMode' :legendData="legendData" style="height:300px;" :value="barData" :text="currentTextOfReport"></orderBar>
           </van-row>
@@ -800,7 +801,7 @@ export default {
       },
       //图表显示处理 
       handleLink(type,sourceData){
-        this.legendData=['面积','金额','']
+        this.legendData=['面积','金额','','','']
         this.popupShow =true
         this.barData =sourceData
         this.dataSource =sourceData
@@ -827,28 +828,28 @@ export default {
             break
          case 'basePaper':
             this.currentMode ='3'
-            this.legendData=['','入库金额','出库金额']
+            this.legendData=['','入库金额','出库金额','入库重量','出库重量']
             this.dataColumns =this.dataColumnsM3 
             this.currentTitlefReport ='本月原纸'
             this.currentTextOfReport ='原纸(金额)对照'
             break
          case 'subMaterial':
             this.currentMode ='4'
-            this.legendData=['','入库金额','出库金额']
+            this.legendData=['','入库金额','出库金额','','']
             this.dataColumns =this.dataColumnsM4 
             this.currentTitlefReport ='本月辅料'
             this.currentTextOfReport ='辅料(金额)对照'
             break
         case 'inoutCome':
             this.currentMode ='5'
-            this.legendData=['','收入','支出']
+            this.legendData=['','收入','支出','','']
             this.dataColumns =this.dataColumnsM5 
             this.currentTitlefReport ='本月收支'
             this.currentTextOfReport ='收支(金额)对照'
             break
         case 'transportation':
             this.currentMode ='6'
-            this.legendData=['','金额','']
+            this.legendData=['','金额','','','']
             this.dataColumns =this.dataColumnsM6 
             this.currentTitlefReport ='本月运输'
             this.currentTextOfReport ='运输(金额)对照'
@@ -1068,7 +1069,7 @@ export default {
          let _self =this
          this.$store.dispatch('getFactoryKanban_action',params).then(res=>{
          
-            console.log(JSON.stringify(res))
+            //console.log(JSON.stringify(res))
             _self.totalReport=res
             _self.getCurrentBriefReportData(res)
          }).catch(err=>{
@@ -1086,6 +1087,9 @@ export default {
 }
  .MarginTop10{
               margin-top:10px;
+  }
+   .MarginTop20{
+              margin-top:20px;
   }
 #app {
    font-family: 'Avenir', Helvetica, Arial, sans-serif;

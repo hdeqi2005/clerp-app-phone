@@ -49,8 +49,6 @@ export default {
   },
   watch: {
          '$route' (to, from) { //监听路由是否变化
-          //  console.log(JSON.stringify(this.$route.path))
-          //  console.log('to.query.keyPathId'+to.query.keyPathId,'from.query.keyPathId'+from.query.keyPathId)
           if(to.query.keyPathId != from.query.keyPathId){
             this.currentFooterSelectedIndex = to.query.keyPathId;
             this.initData();//重新加载数据
@@ -59,13 +57,25 @@ export default {
 
 		},
   computed:{
-    
+      // menuList () {
+      //   let tempMenuList =this.$store.getters.menuList_getters
+      //   return tempMenuList
+      // }
   },
   beforeCreate(){
- 
+    // if(this.$config.isRunApp){
+    //     window.api.showProgress({
+    //       title:"数据加载中...",
+    //       text: '请稍等...'
+    //     });
+    // }
   },
   mounted(){
      this.$nextTick(()=>{
+      //  if(this.$config.isRunApp){
+      //     window.api.hideProgress()
+      //  }
+         
          this.initData()
      })
   },
@@ -75,11 +85,10 @@ export default {
            // debugger
           _self.currentFooterSelectedIndex = _self.$route.query.keyPathId
           let menuParams =_self.$route.query.keyPathId
-          //改用单页
-          // if(_self.$config.isRunApp){
-          //   menuParams =window.api.pageParam.keyPathId
-          //   _self.currentFooterSelectedIndex = menuParams
-          // }
+          if(_self.$config.isRunApp){
+            menuParams =window.api.pageParam.keyPathId
+            _self.currentFooterSelectedIndex = menuParams
+          }
           _self.$store.commit('setCurrentSelectdFooterMenu',menuParams)
           _self.getCurrentViewMenu(menuParams)
           

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <headerview :showLeftbtn="false" :showRightbtn="false" title="晨龙 ERP"></headerview>
+        <headerview :showLeftbtn="false" :showRightbtn="false" :title="title"></headerview>
             <van-row  class="body">
                 <van-grid square :border="false" :column-num="3">
                     <van-grid-item
@@ -18,10 +18,7 @@
                     </template>
                     </van-grid-item>
                 </van-grid>
-                 <!-- <van-cell-group>
-                    <van-cell v-for="(item,index) in currentMenuList" :key="index" @click="turnToPage(`${item.data.resLink}`)" :title="item.title" is-link />
-                </van-cell-group> -->
-                <!-- <div>{{currentMenuList}}</div> -->
+            
             </van-row>
          <footerview></footerview>
     </div>
@@ -35,16 +32,19 @@ export default {
     mixins:[baseMixin],
     data(){
         return{
+            title:'晨龙ERP',
             hasUpdate:false,//是否已經更新字段，
             currentToken:'',//当前用户TOKEN,登陆成功后获取
             currentMenuList:[] //当前用户菜单，通过token查询获取
         }
     },
     created(){
-
+         //console.log('main.index====')
+         this.$store.commit('setCurrentSelectdMenuIndex',0) //重置底部选择
     },
     mounted(){
         this.$nextTick(()=>{
+          
            this.getCurrentViewMenu()
         })
       
@@ -92,6 +92,7 @@ export default {
             let afterFilterData = allMenu.filter(item=>{
                     return item.data.resLink=='index' ? true :false
                 })
+            this.title =afterFilterData[0].title
             this.currentMenuList = afterFilterData[0].children
            //  console.log('this.currentViewMenu :'+ JSON.stringify(this.currentViewMenu))
         },

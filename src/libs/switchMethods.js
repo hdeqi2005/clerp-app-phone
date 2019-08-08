@@ -12,9 +12,15 @@ import router from '@/router'
 
 //跳转页面
 export const turnToPage = (params) => {
-  
+
     if (config.isRunApp) {
-    //  window.api.closeWin()
+  
+      if(params.name.toLowerCase()=='report'||params.name.toLowerCase()=='index'){
+        router.push({path: `/${params.name}`, query: {
+          keyPathId: params.keyPathId
+        }})
+        return
+      }
      //正式环境
      let slidBackEnabled = params.slidBackEnabled
      //slidBackEnabled =true //测试时，放开

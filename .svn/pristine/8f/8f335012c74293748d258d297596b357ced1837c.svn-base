@@ -11,6 +11,6 @@
 }
 [v-cloak]{ display:none}
 
-.table-title {
-    color: white;
- }
+/* .van-grid-item__text{
+    font-weight: bold !important;
+} */

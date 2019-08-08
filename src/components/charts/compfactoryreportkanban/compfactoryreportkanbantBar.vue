@@ -19,7 +19,7 @@ export default {
     },
     legendData:{
         type:Array,
-        default: () => ['面积','金额','']
+        default: () => ['面积','金额','','','']
     },
     sortGroup:{
          type:String,
@@ -106,6 +106,42 @@ export default {
                  break; 
           }
     },
+     getModeInWt(item){
+      //debugger
+       switch(this.currentMode){
+              case '0':
+              case '1':
+              case '2':
+              case '4':
+              case '5':
+              case '6':
+                return 0
+                break;
+              case '3':
+                  return Number.parseFloat(item.inwt)  
+             default:
+                 return 0
+                 break; 
+          }
+    },
+     getModeOutWt(item){
+      //debugger
+       switch(this.currentMode){
+              case '0':
+              case '1':
+              case '2':
+              case '4':
+              case '5':
+              case '6':
+                return 0
+                break;
+              case '3':
+                  return Number.parseFloat(item.outwt)  
+             default:
+                 return 0
+                 break; 
+          }
+    },
     //获取图表数据
     getSeriesData(itemList,typeValue){
       if(itemList.constructor != Array || itemList.length==0){
@@ -119,6 +155,8 @@ export default {
         let modeArea =this.getModeArea(currentObj)
         let modeAmt =this.getModeAmt(currentObj)
         let modeOutAmt =this.getModeOutAmt(currentObj)
+        let modeOutwt =this.getModeOutWt(currentObj)
+        let modeInwt =this.getModeInWt(currentObj)
         let params ={}
       
           if(typeValue=='date'){
@@ -132,6 +170,12 @@ export default {
           }
            if(typeValue=='outamt'){
               params.outAmt =modeOutAmt
+          }
+           if(typeValue=='outwt'){
+              params.outAmt =modeOutwt
+          }
+           if(typeValue=='inwt'){
+              params.outAmt =modeInwt
           }
          let seriesData = Object.values(params)
          //debugger
@@ -155,6 +199,8 @@ export default {
             let seriesData_area = _self.getSeriesData(tempValue,'area')
             let seriesData_amt = _self.getSeriesData(tempValue,'amt')
             let seriesData_outAmt = _self.getSeriesData(tempValue,'outamt')
+            let seriesData_outwt = _self.getSeriesData(tempValue,'outwt')
+            let seriesData_inwt = _self.getSeriesData(tempValue,'inwt')
 
 
       let option = {
@@ -199,6 +245,16 @@ export default {
                           name:legendData[0],
                           type:'bar',
                           data:seriesData_area
+                      },
+                       {
+                          name:legendData[3],
+                          type:'bar',
+                          data:seriesData_inwt
+                      },
+                       {
+                          name:legendData[4],
+                          type:'bar',
+                          data:seriesData_outwt
                       },
                       {
                           name:legendData[1],

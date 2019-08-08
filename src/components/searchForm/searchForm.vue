@@ -34,7 +34,23 @@
 
                                 <van-cell-group>
                              <!----------请选择客户--------------->
-                              <van-field
+                             <van-field
+                                v-show="IsShowCustomerList"
+                               id="customerDropdown"
+                                v-model="currentCustomerText"
+                                center
+                                clearable
+                                label="客户"
+                                placeholder="请选择客户"
+                              >
+                                 <template slot="button">
+                                   <div>
+                                          <van-icon name="plus" @click="showCustomerList()" /> 
+                                   </div>
+                                 </template>
+                              </van-field>
+                             
+                              <!-- <van-field
                                 v-show="IsShowCustomerList"
                                id="customerDropdown"
                                 v-model="currentCustomer"
@@ -49,11 +65,10 @@
                                            <van-dropdown-menu direction="up">
                                               <van-dropdown-item v-model="currentCustomer" :options="customerList" />
                                           </van-dropdown-menu>   
+                                          
                                    </div>
                                  </template>
-                                 <!-- <template slot="right-icon">
-                                      <van-icon color="#3296fa" name="label-o" />
-                                 </template> -->
+                               
                                   <template slot="button">
                                      <span>全部</span>
                                       <van-switch inactive-color="#ccc"
@@ -61,7 +76,7 @@
                                           size="24px"
                                         />
                                  </template>
-                              </van-field>
+                              </van-field> -->
                               <!----------汇总方式--------------->
                                <!-- <van-field
                                 v-show="IsShowMethodOfSumList"
@@ -87,10 +102,11 @@
                             </van-cell-group>
                         </template>
                     </van-cell>
+                    <!-- padding: '30px 50px' -->
                    <van-popup
                     v-model="showGetContainer"
                     get-container="body"
-                    :style="{ width:'90%',padding: '30px 50px' }"
+                    :style="{ width:'90%' }" 
                   >
                     <van-datetime-picker
                       v-model="currentDate"
@@ -102,6 +118,10 @@
                       @cancel="handleCancel"
                     />
                   </van-popup>
+                  <van-popup   get-container="body" v-model="popupShow" position="left" :style="{ height: '100%',width:'100%'}">
+                    <indexBarSelect @closePopup="closePopup"  @handleSelectedEven="handleSelectedEven" :dataSource="customerList"></indexBarSelect>
+                  </van-popup>
+
                     <van-cell style="text-align:center" :center="true"  :border="false" title="确认" >
                         <template slot="title">
                           <van-button class="searchBtn"  @click="handleSearch()" size="large" hairline round type="info">确 认</van-button>
@@ -112,10 +132,13 @@
 </template>
 
 <script>
+
+import indexBarSelect from './indexBarSelect.vue'
 import moment from 'moment'; 
 import { getDate, dataDiff } from "@/libs/tools";
 export default {
   name:'searchForm',
+  components:{indexBarSelect},
   props:{
     IsShowMethodOfSumList:{
       type:Boolean,
@@ -128,13 +151,16 @@ export default {
   },
   data(){
     return {
+      popupShow:false,
+      customerLoaderShow:false,
       checked:false,//all
       currentMethodOfSum:0,//汇总方式:0客户汇总 1 业务员汇总 5日期汇总
-      currentCustomer:1,//当前选中客户
+      currentCustomer:-1,//当前选中客户ID
+      currentCustomerText:'',//当前选中客户文本
       customerList:[
-        { text: '客户一', value: 1 },
-        { text: '客户二', value: 2 },
-        { text: '客户三', value: 3 }
+        // { text: '客户一', value: 1 },
+        // { text: '客户二', value: 2 },
+        // { text: '客户三', value: 3 }
       ],//客户列表数据源
       methodOfSumList:[
         { text: '客户汇总', value: 0 },
@@ -154,7 +180,7 @@ export default {
   },
   created(){
 
-    this.getcustomerInfoList()
+   // this.getcustomerInfoList()
   },
   mounted(){
     // this.searchForm.startDate = moment().format('YYYY-MM-DD')
@@ -164,11 +190,27 @@ export default {
   },
   methods:{
     init(){
-        if(this.customerList.length>0){
-          this.currentCustomer =this.customerList[0].value
-        }
+        // if(this.customerList.length>0){
+        //   this.currentCustomer =this.customerList[0].value
+        // }
 
     },
+    closePopup(){
+      this.popupShow=false
+    },
+    //选中客户回调事件
+    handleSelectedEven(item){
+      //debugger
+      this.currentCustomerText =item.text
+      this.currentCustomer =item.value
+      this.popupShow=false
+    },
+    //加载客户信息列表
+    showCustomerList(){
+        this.popupShow = true
+        this.getcustomerInfoList()
+    },
+   
     //处理发送查询条件
     handleSearch(){
       if(!this.checkInputData()){
@@ -180,7 +222,7 @@ export default {
         ctCode:this.currentCustomer,
         // mode:this.currentMethodOfSum
       }
-       if(this.checked){
+       if(this.currentCustomerText==''){
          params.ctCode=''
        }
       this.$emit('handleSearch',params)
@@ -192,15 +234,15 @@ export default {
         let params ={}
         this.$store.dispatch('getCustomerInfo_action',params).then(res=>{
              if(res.length>0){
-               //debugger
-                _self.customerList =[]
+               let tempCustomerList =[]
                res.forEach(item=>{
                  let subItem ={
                    text:item.ct_Desc,
                    value:item.ct_ID
                  }
-                 _self.customerList.push(subItem)
+                 tempCustomerList.push(subItem)
                })
+               _self.customerList = tempCustomerList
              }
              _self.init()
         }).catch(err=>{

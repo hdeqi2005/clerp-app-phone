@@ -110,7 +110,7 @@
 						
 					</van-cell-group>
 					
-					<v-table :title-row-height="24" :row-height="20" title-bg-color="#3296fae0" id="dt_deliveryquery" ref="dt_deliveryquery"
+					<v-table :title-row-height="20" :row-height="20" title-bg-color="#3296fae0" id="dt_deliveryquery" ref="dt_deliveryquery"
 					 is-vertical-resize style="width:100%;" is-horizontal-resize :columns="boxOut.tableColumns" :table-data="boxOut.tableData"
 					 :show-vertical-border="true" even-bg-color="#f4f4f4" row-hover-color="#eee" row-click-color="#edf7ff"/>
 					
@@ -628,7 +628,7 @@
 </script>
 
 <style lang="less">
-	// .van-field__label {
-	// 	width: 13vw;
-	// }
+	.van-field__label {
+		width: 13vw;
+	}
 </style>
