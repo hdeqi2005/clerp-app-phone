@@ -97,7 +97,7 @@ configureWebpack:config=>{
             //       algorithm: 'gzip',//默认值
             //       test:/\.js$|\.html$|.\css/, //匹配文件名
             //       threshold: 10240,//对超过10k的数据压缩
-            //       deleteOriginalAssets: true //不删除源文件
+            //       deleteOriginalAssets: false //不删除源文件
             //       //配置参数详解
             //       // asset： 目标资源名称。 [file] 会被替换成原始资源。[path] 会被替换成原始资源的路径， [query] 会被替换成查询字符串。默认值是 "[path].gz[query]"。
             //       // algorithm： 可以是 function(buf, callback) 或者字符串。对于字符串来说依照 zlib 的算法(或者 zopfli 的算法)。默认值是 "gzip"。

@@ -10,6 +10,9 @@ import '@/assets/style/resetUi.css' //重置樣式
 import 'vue-easytable/libs/themes-base/index.css' // 引入样式
 import {VTable,VPagination} from 'vue-easytable' // 导入 table 和 分页组件   @使用说明:http://doc.huangsw.com/vue-easytable/app.html#/table/api
 import FastClick from 'fastclick'
+import 'babel-polyfill'
+import Es6Promise from 'es6-promise'
+
 
 //  (0)、方法之间之间调用使用this.方法名称()
 //  (1)、方法之间不需要逗号分隔
@@ -70,6 +73,9 @@ class BaseMain {
           Vue.component('v-table',VTable)
           Vue.component('v-tablePage',VPagination)
           FastClick.attach(document.body)
+          //Vue解决安卓4.4不兼容的问题
+          require('es6-promise').polyfill()
+          Es6Promise.polyfill()
      }
       /**
       * @desc 初始化数据 
