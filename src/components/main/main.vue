@@ -9,14 +9,10 @@
                         :key="index"
                         :text="item.title"
                     >
-                    <template slot="icon" >
-                        <div>
-                        <van-icon size="40" color="#3296fa" :name="item.data.resIcon" >
+                        <template slot="icon" ><div><van-icon size="40" color="#3296fa" :name="item.data.resIcon" >
                              <div class="van-info">{{item.noticeCount}}{{getNotice(index,item.data.resNotice)}}</div>
-                        </van-icon>
-                        </div>
-                    </template>
-                    </van-grid-item>
+                        </van-icon></div></template>
+                        </van-grid-item>
                 </van-grid>
             
             </van-row>

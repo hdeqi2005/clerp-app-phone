@@ -15,9 +15,9 @@
                                     placeholder="请输入用户名"
                                     @click-right-icon="$toast('请输入用户名')"
                                   >
-                                  <template slot="left-icon">
-                                    <van-icon color="#3296fa" name="contact" />
-                                  </template>
+                                  <!-- <template slot="left-icon"> -->
+                                    <van-icon slot="left-icon" color="#3296fa" name="contact"></van-icon>
+                                  <!-- </template> -->
                                   </van-field>
 
                                   <van-field
@@ -29,9 +29,9 @@
                                     @click-right-icon="$toast('请输入密码')"
                                     required
                                   >
-                                  <template slot="left-icon">
-                                    <van-icon color="#3296fa" name="lock" />
-                                  </template>
+                                  <!-- <template slot="left-icon"> -->
+                                    <van-icon slot="left-icon" color="#3296fa" name="lock" />
+                                  <!-- </template> -->
                                   </van-field>
                                 </van-cell-group>
                         </template>
@@ -57,6 +57,7 @@ import { setTimeout } from 'timers';
 export default {
   name:'login',
   mixins:[baseMixin],
+  props: ['messages'],
   data(){
     return {
       isLoading:false,
