@@ -6,8 +6,19 @@ import config from '@/config'
 import ApiCloudAjax from '@/libs/ApiCloudAjax.request'
 import Qs from 'qs'
 
-var axios = config.isRunApp ? ApiCloudAjax : vueAxios
-const apiPath = config.isRunApp ? '/clerp-app-api' : '/api'
+let axios = config.isRunApp ? ApiCloudAjax : vueAxios
+let apiPath=config.isRunApp ?'/clerp-app-api':'/api' //正式环境
+//apiPath= '/clerp-app-api' //测试使用 放开
+
+/**
+ * @desc boxIn 描述 添加出入库
+ * 
+ * @params 参数
+ * 
+ * @author Andy Huang
+ * 
+ * @created 2019/08/22 13:43:45
+ */
 
 export const aspSaveBoxIn = ({
 	bi_Group,

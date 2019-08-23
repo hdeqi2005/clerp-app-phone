@@ -30,6 +30,7 @@ class HttpRequest {
         // Spin.show() // 不建议开启，因为界面不友好
       }
       this.queue[url] = true
+      //console.warn('======请求拦截========:'+JSON.stringify(config))
       return config
     }, error => {
       return Promise.reject(error)

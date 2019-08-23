@@ -21,10 +21,10 @@ module.exports = {
     }]
   ],
   plugins:[
-    'add-module-exports',
-    'syntax-dynamic-import',
-    'transform-object-assign',
-    'transform-object-rest-spread'
+    // 'add-module-exports',
+    // 'syntax-dynamic-import',
+    // 'transform-object-assign',
+    // 'transform-object-rest-spread'
   ],
   comments: false,
   // env: {

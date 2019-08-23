@@ -4,8 +4,9 @@ import ApiCloudAjax from '@/libs/ApiCloudAjax.request'
 import Qs from 'qs'
 
  var axios = config.isRunApp ? ApiCloudAjax : vueAxios
-//const apiPath=config.isRunApp ?'/clerp-app-api':'/api'
-const apiPath='/clerp-app-api'
+ let apiPath=config.isRunApp ?'/clerp-app-api':'/api' //正式环境
+
+   //apiPath= '/clerp-app-api' //测试使用 放开
 /**
 * @description 获取随机码，用于MD5 加密
 * @params { userId }
@@ -93,7 +94,7 @@ export const getMenuByToken = ({ token }) => {
 * @params { token } 
 */
 export const getCustomerInfo = () => {
-  console.warn('=======getCustomerInfo======'+apiPath)
+ // console.warn('=======getCustomerInfo======'+apiPath)
   //参数
   let data = {
     //token

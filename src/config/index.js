@@ -25,7 +25,7 @@ export default {
     /**
      * @description 是否app 运行环境
      */
-    isRunApp:false, //process.env.NODE_ENV === 'production',//is_mobi,//true,// 
+    isRunApp:process.env.NODE_ENV === 'production',//is_mobi,//true,// 
     /**
      * @description token在Cookie中存储的天数，默认1天
      */

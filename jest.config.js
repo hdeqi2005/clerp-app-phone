@@ -13,7 +13,7 @@ module.exports = {
   transformIgnorePatterns: [
     '/node_modules/'
   ],
-  moduleNameMapper: {
+  moduleNameMapper: { 
     '^@/(.*)$': '<rootDir>/src/$1',
     '^_c/(.*)$': '<rootDir>/src/components/$1'
   },

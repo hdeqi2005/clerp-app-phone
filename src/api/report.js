@@ -4,7 +4,9 @@ import ApiCloudAjax from '@/libs/ApiCloudAjax.request'
 import Qs from 'qs'
 
 var axios = config.isRunApp ? ApiCloudAjax : vueAxios
-const apiPath=config.isRunApp ?'/clerp-app-api':'/api'
+let apiPath=config.isRunApp ?'/clerp-app-api':'/api' //正式环境
+
+//apiPath= '/clerp-app-api' //测试使用 放开
 
 /**
 * @description 客户欠款汇总表 SumOfCustArrears

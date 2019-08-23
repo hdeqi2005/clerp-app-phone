@@ -9,7 +9,14 @@
 
  //import header from '@/components/header'
  import testComp from '@/components/testComp'
- //import login from '@/views/login/login.vue'
+
+//  describe块称为"测试套件"(test suite), 表示一组相关的测试. 它是一个函数, 
+//   第一个参数是测试套件的名称(通常写测试组件的名称, 这里即为Counter.js),
+//   第二个参数是一个实际执行的函数.
+// it块称为"测试用例"(test case), 表示一个单独的测试, 是测试的最小单位. 它也是一个函数,
+//   第一个参数是测试用例的名称(通常描述你的断言结果, 这里即为"点击按钮后, count的值应该为1"), 
+//   第二个参数是一个实际执行的函数.
+//  链接：https://www.jianshu.com/p/38a37d5fccb2
 
  describe('testComp.vue', () => {
   it('renders a color', () => {
