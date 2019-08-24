@@ -1,9 +1,10 @@
 <template>
 	<div id="app">
-		<headerview title='辅料审批' :showRightbtn="false"></headerview>
-		<van-pull-refresh v-model="isLoading" @refresh="searchProdPO">
+		<headerview :title='pageTitle'  :showRightbtn="false"></headerview>
+		 <div id="otherContent"></div>
+		<van-pull-refresh  v-model="isLoading" @refresh="searchPOData">
 			<van-panel v-for="(item,index) in purchasesItems" :key="index" class="purchases-panel">
-				<div slot="header" class="purchases-header" @click="searchProdPODetail(item.ID1,item.vendName,item.po_SumNoTax)">
+				<div slot="header" class="purchases-header" @click="searchPODetail(item.ID1,item.vendName,item.sp_SumTaxAmt,item)">
 					<div>
 						{{item.poerName}}-{{item.vendName}}
 					</div>
@@ -13,15 +14,15 @@
 				</div>
 				<div>
 					<div class="purchases-content">
-						<span>采购单号:{{item.po_No}}</span>
+						<span>采购单号:{{item.sp_No}}</span>
 						<span>供应商:{{item.vendName}}</span>
 					</div>
 					<div class="purchases-content">
-						<span>金额:{{item.po_SumNoTax}}</span>
-						<span>总数:{{item.po_Qty}}</span>
+						<!-- <span>含税金额:{{item.sp_SumTaxAmt}}</span> -->
+						<span>总卷数:{{item.sp_SumCoil}}</span>
 					</div>
 					<div class="purchases-content">
-						<span>{{item.po_PODate|timeClear}}</span>
+						<span>{{item.sp_PODate|timeClear}}</span>
 						<span style="color: red;">未审批</span>
 					</div>
 				</div>
@@ -32,17 +33,15 @@
 			<headerview title='采购单详情' :showRightbtn="false" :click-left="()=>{popupShow=false}"></headerview>
 			<van-cell-group>
 				<van-cell title="" />
+				
 				<van-cell title="供应商:" :value="kindName" />
-				<van-cell title="金额:" :value="`${singlePrice+''}`"  />
+				<van-cell title="采购单号:" :value="currentDetailItem.sp_No" />
+				<van-cell title="日期:" :value="formatData(currentDetailItem.sp_PODate)" />
+				<van-cell title="税率:" value="" />
+				<van-cell title="币别:" value="RMB" />
+				<!-- <van-cell title="含税单价:" :value="`${singlePrice+''}`"  /> -->
 			</van-cell-group>
-			<!-- <div style="text-align: left;line-height: 0.8rem;padding: 0 0.4rem;">
-				<p>
-					<label>供应商:{{kindName}}</label>
-				</p>
-				<p>
-					<label>金额:{{singlePrice}}</label>
-				</p>
-			</div> -->
+			
 			<reportDataTable :dataColumns="dataColumns" :error-content="errorContent" :dataSource="tableDataItems" style="width:100%" />
 			<div class="purchases-detail-btn-area">
 				<van-button type="info" size="large" @click="popupExplainShow=true;formItems.approveState=1">同意</van-button>
@@ -50,7 +49,7 @@
 			</div>
 		</van-popup>
 
-		<van-dialog v-model="popupExplainShow" title="审批说明" show-cancel-button @confirm="approveProdPo()">
+		<van-dialog v-model="popupExplainShow" title="审批说明" show-cancel-button @confirm="approvePO()">
 			<van-field v-model="formItems.approvalExplain" type="textarea" placeholder="请输入审批说明" rows="3" autosize />
 		</van-dialog>
 	</div>
@@ -59,7 +58,7 @@
 	/**
 	 * @description 全厂综合报表 CompFactoryReport
 	 */
-
+	import moment from 'moment'
 	import baseMixin from '@/mixins'
 	import reportDataTable from '_c/report/paperorderquery/reportDataTable'
 	import {
@@ -73,60 +72,56 @@
 		},
 		data() {
 			return {
+				pageTitle:'采购单审批',
 				errorContent:'数据加载中...',
+				currentDetailItem:{},
+				pullRefreshHeight:window.innerHeight || document.body.clientHeight,
 				isLoading:false,
 				popupShow: false,
 				popupExplainShow: false,
 				purchasesItems: [],
 				dataColumns: [{
-					field: 'prodName',
-					title: '名称',
-					titleAlign: 'center',
-					columnAlign: 'center',
-					isResize: true,
-					width: 80
-				}, {
-					field: 'model',
-					title: '规格',
-					titleAlign: 'center',
-					columnAlign: 'center',
-					isResize: true,
-					width: 80
-				}, {
 					field: 'kindName',
-					title: '类别',
+					title: '品名',
 					titleAlign: 'center',
 					columnAlign: 'center',
 					isResize: true,
 					width: 80
 				}, {
-					field: 'unitName',
-					title: '单位',
+					field: 'si_Width',
+					title: '纸宽',
 					titleAlign: 'center',
 					columnAlign: 'center',
 					isResize: true,
 					width: 80
 				}, {
-					field: 'poi_PoQty',
-					title: '数量',
+					field: 'si_Gram',
+					title: '克重',
 					titleAlign: 'center',
 					columnAlign: 'center',
 					isResize: true,
 					width: 80
 				}, {
-					field: 'poi_TaxPrice',
-					title: '单价',
+					field: 'gradeName',
+					title: '级别',
 					titleAlign: 'center',
 					columnAlign: 'center',
 					isResize: true,
 					width: 80
 				}, {
-					field: 'TaxAmt',
-					title: '金额',
+					field: 'si_Coil',
+					title: '卷数',
 					titleAlign: 'center',
 					columnAlign: 'center',
 					isResize: true,
 					width: 80
+				}, {
+					field: 'si_TaxPrice',
+					title: '价格(含税)',
+					titleAlign: 'center',
+					columnAlign: 'center',
+					isResize: true,
+					width: 100
 				}],
 				tableDataItems: [],
 				kindName: '',
@@ -138,37 +133,74 @@
 				}
 			}
 		},
+		mounted(){
+			let _self =this
+			this.$nextTick(()=>{
+					_self.pullRefreshHeight =_self.getLeftHeight()
+			})
+		 
+		},
 		created() {
-			this.searchProdPO();
+			this.searchPOData();
 		},
 		methods: {
-			...mapActions(['searchProdPOAction', 'searchProdPODetailAction', 'approveProdPoAction']),
-			searchProdPO() {
+			//格式化时间日期
+			formatData(strDate){
+				
+				if(strDate==undefined || strDate==null){
+					return ''
+				}else
+				{
+					return this.stringToDate(strDate).format("yyyy-MM-dd")
+				}
+			},
+			//字符串转日期
+			stringToDate(dateStr, separator) {
+				if (!separator) {
+					separator = "-";
+				}
+				let dateArr = dateStr.split(separator);
+				let year = parseInt(dateArr[0]);
+				let month;
+				//处理月份为04这样的情况
+				if (dateArr[1].indexOf("0") == 0) {
+					month = parseInt(dateArr[1].substring(1));	
+				} else {
+					month = parseInt(dateArr[1]);
+				}
+				let day = parseInt(dateArr[2]);
+				let date = new Date(year, month - 1, day);
+				return date;
+			},
+
+			...mapActions(['searchPODataAction', 'searchPODetailAction', 'approvePOAction']),
+			searchPOData() {
 				let _self =this
-				this.searchProdPOAction().then(res => {
-					//console.log(res);
+				this.searchPODataAction().then(res => {
 					_self.purchasesItems = res.data;
 					_self.isLoading = false;
 					 if(_self.purchasesItems.length==0){
 						_self.errorContent='暂无数据'
-					}
+						}
 				}).catch(err => {
 					_self.errorContent = '暂无数据';
 					_self.$toast('获取数据失败:' + err);
 					_self.isLoading = false;
 				})
 			},
-			searchProdPODetail(poId, kindName, singlePrice) {
+			searchPODetail(poId, kindName, singlePrice,item) {
+				this.currentDetailItem =item
+				console.log('purchases currentDetailItem'+JSON.stringify(this.currentDetailItem))
 				this.kindName = kindName;
 				this.singlePrice = singlePrice;
 				this.formItems.poId = poId;
 				this.formItems.approvalExplain = '';
-			     let _self =this
-				this.searchProdPODetailAction({
+				let _self =this
+				this.searchPODetailAction({
 					poId: poId
 				}).then(res => {
 					//debugger;
-					//console.log(res);
+					///console.log(res);
 					_self.tableDataItems = res.data;
 					_self.popupShow = true;
 					 if(_self.tableDataItems.length==0){
@@ -179,12 +211,12 @@
 					_self.$toast('获取数据失败:' + err);
 				});
 			},
-			approveProdPo() {
-				if(this.formItems.approvalExplain==''){
+			approvePO() {
+				if(this.formItems.approveState==0 &&this.formItems.approvalExplain==''){
 					this.$toast('请填写备注')
 					return
 				}
-				this.approveProdPoAction(this.formItems).then(res => {
+				this.approvePOAction(this.formItems).then(res => {
 					this.$toast('审批成功');
 				}).catch(err => {
 					this.errorContent = '暂无数据';
@@ -204,9 +236,9 @@
 </script>
 
 <style lang="less">
-	.MarginTop10{
-				margin-top:10px;
-	}
+.MarginTop10{
+              margin-top:10px;
+  }
 	#app {
 		font-family: 'Avenir', Helvetica, Arial, sans-serif;
 		-webkit-font-smoothing: antialiased;
