@@ -1,0 +1,50 @@
+.van-button--info {
+    color: #fff;
+    background-color: #3296fa;
+    border: 1px solid #3296fa;
+}
+.MarginTop10{
+    margin-top:10px;
+}
+.van-info{
+    line-height: 15px !important;
+}
+[v-cloak]{ display:none}
+
+.table-title {
+    color: white;
+ }
+
+ .van-swipe__indicators {
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    /* display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%); */
+}
+
+.van-swipe__indicator {
+
+    background-color: #0b63e6;
+ 
+}
+/* .van-grid-item--square{
+    margin-top: 10px;
+} */
+ /* [class*=van-hairline]::after {
+    border: 1px solid #3296fa;
+    position: absolute;
+    box-sizing: border-box;
+    content: ' ';
+    pointer-events: none;
+    top: -50%;
+    right: -50%;
+    bottom: -50%;
+    left: -50%;
+   
+    -webkit-transform: scale(.5);
+    transform: scale(.5);
+} */

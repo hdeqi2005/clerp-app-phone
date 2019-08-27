@@ -1,0 +1,280 @@
+<template>
+	<div id="app">
+		<headerview :title='pageTitle' :showRightbtn="false"></headerview>
+		<van-pull-refresh v-model="isLoading" @refresh="searchProdPO">
+			<van-panel v-for="(item,index) in purchasesItems" :key="index" class="purchases-panel">
+				<div slot="header" class="purchases-header" @click="searchProdPODetail(item.ID1,item.vendName,item.po_SumTax,item)">
+					<div>
+						{{item.poerName}}-{{item.vendName}}
+					</div>
+					<div>
+						<van-icon name="arrow" color="#949494" />
+					</div>
+				</div>
+				<div>
+					<div class="purchases-content">
+						<span>采购单号:{{item.po_No}}</span>
+						<span>供应商:{{item.vendName}}</span>
+					</div>
+					<div class="purchases-content">
+						<span>金额(含税):{{item.po_SumTax}}</span>
+						<span>总数:{{item.po_Qty}}</span>
+					</div>
+					<div class="purchases-content">
+						<span>{{item.po_PODate|timeClear}}</span>
+						<span style="color: red;">未审批</span>
+					</div>
+				</div>
+			</van-panel>
+		</van-pull-refresh>
+
+		<van-popup v-model="popupShow" position="left" :style="{ height: '100%',width:'100%'}">
+			<headerview title='采购单详情' :showRightbtn="false" :click-left="()=>{popupShow=false}"></headerview>
+			<van-cell-group>
+				<van-cell title="" />
+				<van-cell title="供应商:" :value="kindName" />
+				<van-cell title="采购时间:" :value="formatData(currentDetailItem.po_PODate)" />
+				<van-cell title="采购单号:" :value="currentDetailItem.po_No" />
+				<van-cell title="币别:" :value="currentDetailItem.po_Coin" />
+				<van-cell title="采购数量:" :value="currentDetailItem.po_Qty" />
+				<van-cell title="金额(含税):" :value="`￥${singlePrice+''}`"  />
+			</van-cell-group>
+			
+			<reportDataTable :dataColumns="dataColumns" :error-content="errorContent" :dataSource="tableDataItems" style="width:100%" />
+			<div class="purchases-detail-btn-area">
+				<van-button type="info" size="large" @click="popupExplainShow=true;formItems.approveState=1">同意</van-button>
+				<van-button type="default" size="large" @click="popupExplainShow=true;formItems.approveState=0">不同意</van-button>
+			</div>
+		</van-popup>
+
+		<van-dialog v-model="popupExplainShow" title="审批说明" show-cancel-button @confirm="approveProdPo()">
+			<van-field v-model="formItems.approvalExplain" type="textarea" placeholder="请输入审批说明" rows="3" autosize />
+		</van-dialog>
+	</div>
+</template>
+<script>
+	/**
+	 * @description 全厂综合报表 CompFactoryReport
+	 */
+
+	import baseMixin from '@/mixins'
+	import reportDataTable from '_c/report/paperorderquery/reportDataTable'
+	import {
+		mapActions
+	} from 'vuex'
+	export default {
+		name: 'CompFactoryReport',
+		mixins: [baseMixin],
+		components: {
+			reportDataTable
+		},
+		data() {
+			return {
+				pageTitle:'辅料审批',
+				errorContent:'数据加载中...',
+				currentDetailItem:{},
+				isLoading:false,
+				popupShow: false,
+				popupExplainShow: false,
+				purchasesItems: [],
+				dataColumns: [{
+					field: 'ProdName',
+					title: '名称',
+					titleAlign: 'center',
+					columnAlign: 'center',
+					isResize: true,
+					width: 80
+				}, 
+				{
+					field: 'model',
+					title: '规格',
+					titleAlign: 'center',
+					columnAlign: 'center',
+					isResize: true,
+					width: 80
+				}, 
+				// {
+				// 	field: 'kindName',
+				// 	title: '类别',
+				// 	titleAlign: 'center',
+				// 	columnAlign: 'center',
+				// 	isResize: true,
+				// 	width: 80
+				// }, 
+				{
+					field: 'unitName',
+					title: '单位',
+					titleAlign: 'center',
+					columnAlign: 'center',
+					isResize: true,
+					width: 80
+				}, {
+					field: 'poi_PoQty',
+					title: '数量',
+					titleAlign: 'center',
+					columnAlign: 'center',
+					isResize: true,
+					width: 80
+				}, {
+					field: 'poi_TaxPrice',
+					title: '单价',
+					titleAlign: 'center',
+					columnAlign: 'center',
+					isResize: true,
+					width: 80
+				}, {
+					field: 'TaxAmt',
+					title: '金额(含税)',
+					titleAlign: 'center',
+					columnAlign: 'center',
+					isResize: true,
+					width: 100
+				}],
+				tableDataItems: [],
+				kindName: '',
+				singlePrice: 0,
+				formItems: {
+					poId: '',
+					approvalExplain: '',
+					approveState: 0
+				}
+			}
+		},
+		created() {
+			this.searchProdPO();
+		},
+		methods: {
+			//格式化时间日期
+			formatData(strDate){
+				
+				if(strDate==undefined || strDate==null){
+					return ''
+				}else
+				{
+					return this.stringToDate(strDate).format("yyyy-MM-dd")
+				}
+			},
+			//字符串转日期
+			stringToDate(dateStr, separator) {
+				if (!separator) {
+					separator = "-";
+				}
+				let dateArr = dateStr.split(separator);
+				let year = parseInt(dateArr[0]);
+				let month;
+				//处理月份为04这样的情况
+				if (dateArr[1].indexOf("0") == 0) {
+					month = parseInt(dateArr[1].substring(1));	
+				} else {
+					month = parseInt(dateArr[1]);
+				}
+				let day = parseInt(dateArr[2]);
+				let date = new Date(year, month - 1, day);
+				return date;
+			},
+			...mapActions(['searchProdPOAction', 'searchProdPODetailAction', 'approveProdPoAction']),
+			searchProdPO() {
+				let _self =this
+				this.searchProdPOAction().then(res => {
+					//console.log(res);
+					_self.purchasesItems = res.data;
+					_self.isLoading = false;
+					 if(_self.purchasesItems.length==0){
+						_self.errorContent='暂无数据'
+					}
+				}).catch(err => {
+					_self.errorContent = '暂无数据';
+					_self.$toast('获取数据失败:' + err);
+					_self.isLoading = false;
+				})
+			},
+			searchProdPODetail(poId, kindName, singlePrice,item) {
+				this.currentDetailItem =item
+			 console.log('material currentDetailItem'+JSON.stringify(this.currentDetailItem))
+				this.kindName = kindName;
+				this.singlePrice = singlePrice;
+				this.formItems.poId = poId;
+				this.formItems.approvalExplain = '';
+			     let _self =this
+				this.searchProdPODetailAction({
+					poId: poId
+				}).then(res => {
+					//debugger;
+					//console.log(res);
+					_self.tableDataItems = res.data;
+					_self.popupShow = true;
+					 if(_self.tableDataItems.length==0){
+						_self.errorContent='暂无数据'
+					}
+				}).catch(err => {
+					_self.errorContent = '暂无数据';
+					_self.$toast('获取数据失败:' + err);
+				});
+			},
+			approveProdPo() {
+				if(this.formItems.approveState==0 && this.formItems.approvalExplain==''){
+					this.$toast('请填写备注')
+					return
+				}
+				this.approveProdPoAction(this.formItems).then(res => {
+					this.$toast('审批成功');
+				}).catch(err => {
+					this.errorContent = '暂无数据';
+					this.$toast('执行失败:' + err);
+				});
+			}
+		},
+		filters: {
+			timeClear: function(value) {
+				if (value) {
+					return value.replace('00:00:00', '');
+				}
+				return value;
+			}
+		}
+	}
+</script>
+
+<style lang="less">
+	.MarginTop10{
+				margin-top:10px;
+	}
+	#app {
+		font-family: 'Avenir', Helvetica, Arial, sans-serif;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		// text-align: center;
+		// color: #2c3e50;
+		//background-color: #E4E4E4;
+	}
+
+		.purchases-content,
+	.purchases-header {
+		font-size: 12px;
+		justify-content: space-between;
+		display: flex;
+		padding: 7px 14px;
+	}
+
+	.purchases-content span {
+		color: #949494;
+	}
+
+	.purchases-panel {
+		 margin-bottom: 5px;
+	}
+
+	.purchases-header {
+		border-bottom: 1px dashed #E4E4E4;
+		font-size: 16px;
+		line-height: 18px;
+		padding: 7px 14px;
+	}
+
+	.purchases-detail-btn-area {
+		display: flex;
+		position: fixed;
+		width: 100%;
+		bottom: 0;
+	}
+</style>

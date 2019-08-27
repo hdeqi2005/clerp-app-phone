@@ -1,0 +1,374 @@
+<template>
+    <div class="container">
+          
+           <van-row id="searchFormDiv" class="body">
+                    <van-cell :border="false" title="查询" >
+                        <template slot="title">
+                              <van-cell-group>
+                                  <van-field
+                                    v-model="searchForm.startDate"
+                                    required
+                                    clearable
+                                    label="起始日期"
+                                    :disabled="true"
+                                    @focus="handlefocus('start')"
+                                    placeholder="请输入起始日期"
+                                    @click-right-icon="handlefocus('start')"
+                                  >
+                                    <template slot="right-icon">
+                                      <van-icon color="#3296fa" name="calender-o" />
+                                    </template>
+                                  </van-field>
+
+                                  <van-field
+                                    v-model="searchForm.endDate"
+                                     :disabled="true"
+                                     @focus="handlefocus('end')"
+                                    label="结束日期"
+                                    placeholder="请输入结束日期"
+                                    required
+                                   @click-right-icon="handlefocus('end')"
+                                  >
+                                  <template slot="right-icon">
+                                    <van-icon color="#3296fa" name="calender-o" />
+                                  </template>
+                                  </van-field>
+                                </van-cell-group>
+
+                                <van-cell-group>
+                             <!----------请选择客户--------------->
+                             <van-field
+                                v-show="IsShowCustomerList"
+                               id="customerDropdown"
+                                v-model="currentCustomerText"
+                                maxlength="20"
+                                center
+                                clearable
+                                label="客户"
+                                placeholder="请选择客户"
+                              >
+                                 <template slot="button">
+                                   <div>
+                                          <van-icon name="plus" @click="showCustomerList()" /> 
+                                   </div>
+                                 </template>
+                              </van-field>
+                             
+                              <!-- <van-field
+                                v-show="IsShowCustomerList"
+                               id="customerDropdown"
+                                v-model="currentCustomer"
+                                center
+                                required
+                                clearable
+                                label="客户"
+                                placeholder="请选择客户"
+                              >
+                                 <template slot="input">
+                                   <div>
+                                           <van-dropdown-menu direction="up">
+                                              <van-dropdown-item v-model="currentCustomer" :options="customerList" />
+                                          </van-dropdown-menu>   
+                                          
+                                   </div>
+                                 </template>
+                               
+                                  <template slot="button">
+                                     <span>全部</span>
+                                      <van-switch inactive-color="#ccc"
+                                          v-model="checked"
+                                          size="24px"
+                                        />
+                                 </template>
+                              </van-field> -->
+                              <!----------汇总方式--------------->
+                               <!-- <van-field
+                                v-show="IsShowMethodOfSumList"
+                               id="methodOfSumDropdown"
+                                v-model="currentMethodOfSum"
+                                center
+                                required
+                                clearable
+                                label="汇总方式"
+                                placeholder="请选择汇总方式"
+                              >
+                                 <template slot="input">
+                                   <div>
+                                           <van-dropdown-menu direction="up">
+                                              <van-dropdown-item v-model="currentMethodOfSum" :options="methodOfSumList" />
+                                          </van-dropdown-menu>   
+                                   </div>
+                                 </template>
+                                 <template slot="right-icon">
+                                      <van-icon color="#3296fa" name="bookmark-o" />
+                                 </template>
+                              </van-field> -->
+                            </van-cell-group>
+                        </template>
+                    </van-cell>
+                    <!-- padding: '30px 50px' -->
+                   <van-popup 
+                    v-model="showGetContainer"
+                    get-container="body"
+                    :style="{ width:'100%','z-index':'9999'}" 
+                  >
+                    <van-datetime-picker
+                      v-model="currentDate"
+                      type="date"
+                      :min-date="minDate"
+                      :max-date="maxDate"
+                      :formatter="formatter"
+                      @confirm="handleConfirm"
+                      @cancel="handleCancel"
+                    />
+                  </van-popup>
+                 
+                  <van-popup   get-container="body" v-model="popupShow" position="left" :style="{ height: '100%',width:'100%'}">
+                    <indexBarSelect :showRightBtn="showRightBtnText" :showRightBtnText="showRightBtnText" @closePopup="closePopup"  @handleSelectedEven="handleSelectedEven" :dataSource="customerList"></indexBarSelect>
+                  </van-popup>
+
+                    <van-cell style="text-align:center" :center="true"  :border="false" title="确认" >
+                        <template slot="title">
+                          <van-button class="searchBtn"  @click="handleSearch()" size="large" hairline round type="info">确 认</van-button>
+                        </template>
+                   </van-cell>
+            </van-row>
+    </div>
+</template>
+
+<script>
+
+import indexBarSelect from './indexBarSelect.vue'
+import moment from 'moment'; 
+import { getDate, dataDiff } from "@/libs/tools";
+export default {
+  name:'searchForm',
+  components:{indexBarSelect},
+  props:{
+    IsShowMethodOfSumList:{
+      type:Boolean,
+      default:false
+    },
+    IsShowCustomerList:{
+      type:Boolean,
+      default:true
+    }
+  },
+  data(){
+    return {
+      showRightBtnText:false,
+      popupShow:false,
+      customerLoaderShow:false,
+      checked:false,//all
+      currentMethodOfSum:0,//汇总方式:0客户汇总 1 业务员汇总 5日期汇总
+      currentCustomer:-1,//当前选中客户ID
+      currentCustomerText:'',//当前选中客户文本
+      customerList:[
+        // { text: '客户一', value: 1 },
+        // { text: '客户二', value: 2 },
+        // { text: '客户三', value: 3 }
+      ],//客户列表数据源
+      methodOfSumList:[
+        { text: '客户汇总', value: 0 },
+        { text: '业务员汇总', value: 1 },
+        { text: '日期汇总', value: 5 }
+      ],//汇总方式数据源
+      showGetContainer:false,
+      isSelectedEndDate:false,
+      currentDate: new Date(),
+      searchForm:{
+        startDate:'',
+        endDate:'',
+      },
+      minDate: new Date(2017, 0, 1),
+      maxDate: new Date(),
+    }
+  },
+  created(){
+
+   // this.getcustomerInfoList()
+  },
+  mounted(){
+    // this.searchForm.startDate = moment().format('YYYY-MM-DD')
+    // this.searchForm.endDate = moment().add(1,'months').format('YYYY-MM-DD')
+     this.searchForm.startDate =moment().add(0,'month').format('YYYY-MM') + '-01'
+     this.searchForm.endDate =moment().format('YYYY-MM-DD')
+  },
+  methods:{
+    init(){
+        // if(this.customerList.length>0){
+        //   this.currentCustomer =this.customerList[0].value
+        // }
+
+    },
+    closePopup(){
+      this.popupShow=false
+    },
+    //选中客户回调事件
+    handleSelectedEven(item){
+     debugger
+      this.currentCustomerText =item.text
+      this.currentCustomer =item.value
+      // if(this.showRightBtnText){
+         
+      //    let allSelectedText =item.map((subItem,index,arr)=>{
+      //       return subItem.text
+      //    })
+      //    let allSelectedValue =item.map((subItem,index,arr)=>{
+      //       return subItem.text
+      //    })
+
+      //   this.currentCustomerText =allSelectedText+''
+      //   this.currentCustomer =allSelectedValue+''
+      // }
+      this.popupShow=false
+    },
+    //加载客户信息列表
+    showCustomerList(){
+        this.popupShow = true
+        this.getcustomerInfoList()
+    },
+   
+    //处理发送查询条件
+    handleSearch(){
+      if(!this.checkInputData()){
+          return
+      }
+      let params ={
+        startDate:this.searchForm.startDate,
+        endDate:this.searchForm.endDate,
+        ctCode:this.currentCustomer,
+        // mode:this.currentMethodOfSum
+      }
+       if(this.currentCustomerText==''){
+         params.ctCode=''
+       }
+      this.$emit('handleSearch',params)
+    },
+    //查询用户列表信息
+    getcustomerInfoList(){
+        // debugger
+        let _self = this
+        let params ={}
+        this.$store.dispatch('getCustomerInfo_action',params).then(res=>{
+             if(res.length>0){
+               let tempCustomerList =[]
+               res.forEach(item=>{
+                 let subItem ={
+                   text:item.ct_Desc,
+                   value:item.ct_ID
+                 }
+                 tempCustomerList.push(subItem)
+               })
+               _self.customerList = tempCustomerList
+             }
+             _self.init()
+        }).catch(err=>{
+          _self.$toast('获取客户列表失败:'+err)
+        })
+    },
+     //验证两个输入的日期 是否有效
+    checkInputData() {
+      let flag = true;
+      let msg = "";
+      if (this.searchForm.startDate == "" || this.searchForm.endDate == "") {
+        msg = "起始/结束日期必填";
+        flag = false;
+      } else if (this.searchForm.startDate != "" || this.searchForm.endDate != "") {
+        let date1 = this.stringToDate(this.searchForm.startDate);
+        let date2 = this.stringToDate(this.searchForm.endDate);
+        let diff = dataDiff("d", date1, date2);
+        if (diff > 730) {
+          msg = "时间间隔不能超过2年";
+          flag = false;
+        }
+        if (diff < 0) {
+          msg = "结束日期必须大于起始日期";
+          flag = false;
+        }
+      }
+
+      if (msg != "") {
+        this.$toast(msg);
+      }
+      return flag;
+    },
+     //字符串转日期
+    stringToDate(dateStr, separator) {
+      if (!separator) {
+        separator = "-";
+      }
+      let dateArr = dateStr.split(separator);
+      let year = parseInt(dateArr[0]);
+      let month;
+      //处理月份为04这样的情况
+      if (dateArr[1].indexOf("0") == 0) {
+        month = parseInt(dateArr[1].substring(1));
+      } else {
+        month = parseInt(dateArr[1]);
+      }
+      let day = parseInt(dateArr[2]);
+      let date = new Date(year, month - 1, day);
+      return date;
+    },
+     //格式化 起始/结束 选择日期格式
+    formatter(type, value) {
+      if (type === "year") {
+        return `${value}年`;
+      } else if (type === "month") {
+        return `${value}月`;
+      }
+      return value;
+    },
+    handlefocus(type){
+       document.activeElement.blur();//屏蔽默认键盘弹出；
+       this.isSelectedEndDate=true
+      if(type=='start'){
+          this.isSelectedEndDate=false
+      }
+      this.showGetContainer=true
+    },
+      //确认日期
+    handleConfirm(value) {
+      //debugger
+      let currentYear = value.getFullYear();
+      let currentMonth = value.getMonth();
+      let currentDay = value.getDate();
+      if (Number(currentMonth) + 1 < 10) {
+        currentMonth = "0" + (Number(currentMonth) + 1);
+      } else {
+        currentMonth = Number(currentMonth) + 1;
+      }
+      let tempDate = currentYear + "-" + currentMonth + "-" + currentDay;
+      if (this.isSelectedEndDate) {
+        this.searchForm.endDate = tempDate;
+      } else {
+        this.searchForm.startDate = tempDate;
+      }
+      this.showGetContainer = false;
+    },
+    //取消日期
+    handleCancel() {
+      this.showGetContainer = false;
+    },
+  }
+}
+</script>
+<style>
+.searchBtn{
+  width: 250px;
+}
+.van-dropdown-menu__item{
+    justify-content: left !important;
+}
+.van-hairline--top-bottom::after{
+  border-width:0px 
+}
+.van-dropdown-menu{
+  height: 20px;
+ 
+}
+#searchFormDiv .van-field__control{
+  color: #323233 !important;
+}
+</style>

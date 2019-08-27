@@ -483,6 +483,7 @@
 					this.$toast.clear();
 					res = res.list;
 					this.paperStoreTableData = res;
+					//console.log('this.paperStoreTableData'+JSON.stringify(res))
 				}).catch(err => {
 					this.$toast.clear();
 					this.errorContent = '暂无数据';

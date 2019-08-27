@@ -1,0 +1,181 @@
+<template>
+<div>
+    <!-- 占位符 补刀缺失的浮动高度 -->
+   <div  class="headerTopClass"></div>
+  <div id="appheaderM" class="NavBarcontainer">
+          <!-- 占位符 兼容手机高度 不可删除 -->
+        <van-nav-bar :border="false" :title="title">
+        </van-nav-bar>
+       
+        <div id="headerTop">
+                    <van-nav-bar   :fixed="true" :border="false"
+                            :title="title"
+                            @click-left="onClickLeft"
+                            @click-right="onClickRight"
+                            >
+                            <template slot="left" >
+                                <div v-show="showLeftbtn">
+                                <van-icon  size="20" color="white" name="arrow-left" />
+                                </div>
+                            </template>
+                            <template slot="right">
+                                <div v-show="showRightbtn">
+                                    <span v-show="showRightBtnText" class="rightBtnText">确定</span>
+                                    <van-icon v-show="!showRightBtnText" size="20" color="white" name="search" />
+                                </div>
+                            </template>
+                           
+                    </van-nav-bar>
+                    <!-- // 具名插槽 -->
+                    <slot name="up"></slot>
+                    <!-- // 匿名插槽 -->
+                    <slot></slot>
+                    <!-- // 具名插槽 -->
+                    <slot name="down"></slot>
+               
+         </div>
+         <div v-html="setMarginFloatTopStyle"> <!-- //设置是样式-控制手机浮动高度 --></div>
+    </div>
+     
+</div>
+</template>
+<script>
+export default {
+    name:'header-view',
+    props:{
+        showRightBtnText:{
+            type:Boolean,
+            default:false
+        },
+        isFixed:{
+            type:Boolean,
+            default:false
+        },
+        title:{
+            type:String,
+            default:'晨龙ERP'
+        },
+        showLeftbtn:{
+            type:Boolean,
+            default:true
+        },
+        showRightbtn:{
+            type:Boolean,
+            default:true
+        },
+       returnUrl:{
+            type:String,
+            default:''
+        },
+       closeToWin:{
+            type:Boolean,
+            default:false
+        },
+        clickLeft:{
+			type:Function
+		}
+    },
+    data(){
+        return{
+            setMarginFloatTopStyle:''
+        }
+    },
+    mounted(){
+         this.marginFloatTop()
+    },
+    methods: {
+      //控制手机顶部浮动高度
+    marginFloatTop(){
+         let _self =this
+         this.$nextTick(()=>{
+              let safeAreatop = 10
+              if(_self.$config.isRunApp){
+                  safeAreatop = window.api.safeArea.top
+                  _self.setMarginFloatTopStyle =`<style>#headerTop .van-nav-bar--fixed{top: ${safeAreatop}px !important;}.headerTopClass{height:${safeAreatop+2}px !important;}</style >`
+              } 
+         })
+           
+        },
+    onClickLeft() {
+			if(this.clickLeft){
+				this.clickLeft();
+				return;
+			}
+            if(this.returnUrl!=""){
+                 let params ={
+                     name:this.returnUrl
+                 }
+                switchMethods.turnToPage(params)
+            }else{
+                if(this.$config.isRunApp){
+                    if(this.closeToWin){
+                     window.api.closeToWin({
+                        name: 'root'
+                      })
+                    }
+                   window.api.closeWin()
+                }else{
+                     location.href="javascript:history.go(-1)";  
+                }
+            }
+         //this.sendRefreshEvent()
+        },
+    onClickRight() {
+       this.$emit('onClickRight')
+    }
+  },
+    //发送刷新界面事件
+    sendRefreshEvent(){
+            if(this.$config.isRunApp){
+                window.api.sendEvent({
+                name: 'refreshEvent',
+                extra: {
+                    key1: 'value1',
+                }
+            });
+          }  
+        }
+    
+}
+</script>
+<style scoped>
+.headerTopClass{
+    position: fixed;
+    left: 0px;
+    top:0px;
+    height: 12px;
+    width: 100%;
+    z-index: 9999;
+    background-color:#3296fa;
+}
+/* #appheaderM{
+    padding-top: 10px;
+}
+#headerTop .van-nav-bar--fixed{
+    top: 10px;
+
+} */
+ 
+.headerMargin{
+    padding-top: 5px;
+}
+.NavBarcontainer{
+    /* position: fixed;
+    left: 0px;
+    top:0px;
+    width: 100%;
+    height: 10px;
+    z-index: 999; */
+    background-color:#3296fa;
+}
+.van-nav-bar{
+      background-color:#3296fa
+    }
+.van-nav-bar__title{
+        font-weight: bold;
+        color: #fff;
+} 
+.rightBtnText{
+    color: #fff;
+}
+</style>
